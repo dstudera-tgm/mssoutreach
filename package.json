@@ -1,0 +1,64 @@
+{
+  "name": "client_side",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "build-dev": "vue-cli-service build --mode development",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "core-js": "^2.6.5",
+    "d3": "^5.9.7",
+    "node-sass": "^4.13.0",
+    "plotly.js": "^1.48.3",
+    "sass": "^1.23.7",
+    "sass-loader": "^8.0.0",
+    "socket.io-client": "^2.2.0",
+    "style-loader": "^1.0.0",
+    "v-selectmenu": "^2.0.2",
+    "vue": "^2.6.10",
+    "vue-fullpage.js": "^0.1.4",
+    "vue-grd": "^1.2.1",
+    "vue-loader": "^15.7.1",
+    "vue-native-websocket": "^2.0.13",
+    "vue-socket.io": "^3.0.7",
+    "vuex": "^3.1.1",
+    "webpack": "^4.41.2"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.8.0",
+    "@vue/cli-plugin-eslint": "^3.8.0",
+    "@vue/cli-service": "^3.8.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.16.0",
+    "eslint-plugin-vue": "^5.0.0",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {
+      "no-console": "off"
+    },
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
+}
