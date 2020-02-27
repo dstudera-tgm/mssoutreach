@@ -27,7 +27,7 @@
 <template>
     <!--<div id="mapcontainer" @click.ctrl="capture_map">-->
     <div id="mapcontainer">
-        <!--<svg id="map" viewBox="0 0 4000 2500" preserveAspectRatio="xMidYMid slice">-->
+        <!--<svg id="map" viewBox="0 0 4000 2500" preserveAspectRatio="xMidYMid slice">--
         <div id="map_info">last data: {{ data_time_range[1] }} UTC<br>
                            first data: {{ data_time_range[0] }} UTC<br>
                            server state: {{ server_state }}<br><br>
@@ -50,7 +50,7 @@
         <div id="map_config">
             <input type='checkbox' v-model='show_event_monitor' />show event monitor<br>
             <input type='checkbox' v-model='show_event_warning' />show event warning<br>
-            <!--<label><input type='checkbox' v-model='show_event_detection'/>show event detection</label><br>-->
+            <!--<label><input type='checkbox' v-model='show_event_detection'/>show event detection</label><br>--
             <input type='checkbox' v-model='show_detection_result' />show detection data<br>
         </div>
 
@@ -67,12 +67,22 @@
                           v-bind:y_utm="cur_station.y_utm"/>
 
             <PGVLegend name="map_legend"/>
-        </svg>
+        </svg>-->
+		
+		<div id="mapid">
+
+		</div>
+
     </div>
+	
+	
 </template>
 
+	
 
-<script>
+
+
+<script>	
 import PGVMapMarker from '../components/PGVMapMarker.vue';
 import PGVLegend from '../components/PGVLegend.vue';
 import PGVEventVoronoi from '../components/PGVEventVoronoi.vue';
@@ -105,6 +115,20 @@ export default {
     },
 
     mounted() {
+		const leaflet_map=L.map("mapid").setView([51.505,-0.03],13);
+		
+		L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+				'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+			id: 'mapbox/streets-v11',
+			tileSize: 512,
+			zoomOffset: -1
+		}).addTo(leaflet_map);
+
+		
+		
         this.map_image = new Image;
         this.init_map();
         //window.addEventListener('resize', this.on_resize);
@@ -301,6 +325,10 @@ export default {
 $breakpoint-mobile-width: 700px
 $breakpoint-mobile-height: 350px
 
+div#mapid
+    height: 100%
+    width: 100%
+	
 div#mapcontainer
     height: 100%
     position: relative
