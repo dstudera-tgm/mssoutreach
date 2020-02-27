@@ -126,6 +126,8 @@ export default {
 			tileSize: 512,
 			zoomOffset: -1
 		}).addTo(leaflet_map);
+		
+		var svg = d3.select(leaflet_map.getPanes().overlayPane).append("svg"),g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 		
 		
