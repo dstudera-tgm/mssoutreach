@@ -106,6 +106,7 @@ export default {
 
     data() {
         return {
+			leaflet_map: 'undefined',
             map_image: 'undefined',
             map_image_url: '/assets/vue/image/mss_map_with_stations.jpg',
         };
@@ -115,19 +116,11 @@ export default {
     },
 
     mounted() {
-		const leaflet_map=L.map("mapid").setView([51.505,-0.03],13);
+		//Leaflet map initialisieren
+		this.leaflet_map=L.map("mapid");
 		
-		L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-			maxZoom: 18,
-			attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-				'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-				'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-			id: 'mapbox/streets-v11',
-			tileSize: 512,
-			zoomOffset: -1
-		}).addTo(leaflet_map);
 		
-		var svg = d3.select(leaflet_map.getPanes().overlayPane).append("svg"),g = svg.append("g").attr("class", "leaflet-zoom-hide");
+		
 
 		
 		
@@ -259,9 +252,29 @@ export default {
 
     methods: {
         init_map() {
-            this.show_image();
+			L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+				maxZoom: 18,
+				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+					'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+					'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+				id: 'mapbox/streets-v11',
+				tileSize: 512,
+				zoomOffset: -1
+			}).addTo(this.leaflet_map);
+			this.leaflet_map.setView([47.859,16.0457],9);
+
+			//SVG Overlay mittels d3.js für Geojson
+			let svg = d3.select(this.leaflet_map.getPanes().overlayPane).append("svg"),g = svg.append("g").attr("class", "leaflet-zoom-hide");
+			
+			
+			
+			//this.leaflet_map.invalidateSize();
+			
+			//this.show_image();
             //this.on_resize();
         },
+		
+		
 
         calculate_path() {
             const scale = this.get_scales();
