@@ -25,7 +25,7 @@
 -->
 
 <template>
-    <g v-bind:id="element_id">
+    <g v-bind:id="element_id" class="leaflet-zoom-hide markerGroup" v-on:click>
         <circle v-bind:id="element_id + '_current'"
                 :r="pgv_radius"
                 :fill="pgv_fill"
@@ -49,6 +49,8 @@ export default {
 
     props: {
         station_id: String,
+		x: String,
+		y: String,
         x_utm: String,
         y_utm: String,
         radius_limits: Array,
@@ -56,19 +58,23 @@ export default {
 
     mounted () {
         var scales = this.scales;
-        var marker_svg = d3.select("#" + this.element_id + "_current");
-        marker_svg.attr("cx", scales.x(this.x_utm))
-                  .attr("cy", scales.y(this.y_utm))
-                  .attr('stroke', 'black');
+        
+		var marker_svg = d3.select("#" + this.element_id + "_current");
+			marker_svg.attr("cx", this.x)
+					  .attr("cy", this.y)
+					  .attr('stroke', 'black');
 
-        marker_svg = d3.select("#" + this.element_id + "_max");
-        marker_svg.attr("cx", scales.x(this.x_utm))
-                  .attr("cy", scales.y(this.y_utm))
-                  .attr('stroke', 'black');
-        marker_svg.lower();
+			marker_svg = d3.select("#" + this.element_id + "_max");
+			marker_svg.attr("cx", this.x)
+					  .attr("cy", this.y)
+					  .attr('stroke', 'black');
+			marker_svg.lower();
 
-        var map_svg = d3.select("#map");
+        var map_svg = d3.select("#svg_template");
         this.svg_matrix = map_svg.node().getScreenCTM();
+		
+		$('#svg_template').find('g').appendTo("#svg_overlay");
+		$('#svg_template').remove();
 
         window.addEventListener('resize', this.on_resize);
     },
@@ -190,13 +196,12 @@ export default {
     },
 
     methods: {
-
-        pgv_to_color(pgv) {
-            // Convert the PGV value [m/s] to a color value.
-            const colormap = this.$store.getters.map_config.colormap;
-            var color = colormap(this.scales.color(pgv));
-            return color;
-        },
+		pgv_to_color(pgv) {
+			// Convert the PGV value [m/s] to a color value.
+			const colormap = this.$store.getters.map_config.colormap;
+			var color = colormap(this.scales.color(pgv));
+			return color;
+		},
 
         on_resize: function() {
             var map_svg = d3.select("#map");

@@ -65,7 +65,7 @@ export default {
     mounted () {
         //var markers = d3.selectAll("circle[id^='pgv_legend_marker']");
         //var self = this;
-        var map_svg = d3.select("#map");
+        //var map_svg = d3.select("#svg_template");
 
         this.svg_matrix = map_svg.node().getScreenCTM();
 

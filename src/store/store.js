@@ -196,6 +196,7 @@ export default new Vuex.Store({
     state: {
         stations: [],
         station_meta: [],
+		stations_imported:false,
         pgv_data: {},
         detection_result_data: {},
         event_data: {},
@@ -359,6 +360,10 @@ export default new Vuex.Store({
 
         station_meta: (state) => {
             return state.station_meta;
+        },
+		
+		stations_imported: (state) => {
+            return state.stations_imported;
         },
 
         map_config: (state) => {
@@ -524,6 +529,7 @@ export default new Vuex.Store({
                                  "pgv";
                 }
                 state.station_meta = data;
+				state.stations_imported=true;
                 console.log("Store :: Station metadata loaded.");
                 //self.plot_stations();
             });

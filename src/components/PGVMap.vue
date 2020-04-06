@@ -70,14 +70,30 @@
         </svg>-->
 		
 		<div id="mapid">
-
+	
+			
 		</div>
+		
+		<svg id="svg_template">
+				<!--<circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />-->
+				<PGVEventVoronoi event_id="mss_event_20191031T155000"/>
+				<PGVMapMarker v-for="cur_station in stations"
+							  v-bind:key="cur_station.id"
+							  v-bind:station_id="cur_station.id"
+							  v-bind:x="cur_station.x"
+							  v-bind:y="cur_station.y"/>
 
-    </div>
+				<PGVLegend name="map_legend"/>
+		</svg>
+    	</div>
 	
 	
 </template>
+<script>
 
+
+
+</script>
 	
 
 
@@ -107,28 +123,41 @@ export default {
     data() {
         return {
 			leaflet_map: 'undefined',
+			
+			
             map_image: 'undefined',
             map_image_url: '/assets/vue/image/mss_map_with_stations.jpg',
         };
     },
 
     created() {
+		
     },
 
     mounted() {
 		//Leaflet map initialisieren
 		this.leaflet_map=L.map("mapid");
-		
-		
-		
-
-		
-		
+			
         this.map_image = new Image;
         this.init_map();
-        //window.addEventListener('resize', this.on_resize);
         //this.$watch('radius', this.plot_stations);
         this.$store.commit("LOAD_STATION_METADATA");
+		
+		
+		const vm=this;
+		var checkExist = setInterval(function() {
+		   if (vm.$store.getters.stations_imported==true) {
+			   clearInterval(checkExist);
+			   console.log("Stations: "+vm.$store.getters.station_meta.length);
+			   vm.updateMarkers();
+		   }
+		}, 100);
+		
+		
+		window.addEventListener('resize', this.on_resize);
+		this.leaflet_map.on("moveend", this.updateMarkers);
+		
+					
     },
 
     computed: {
@@ -262,20 +291,43 @@ export default {
 				zoomOffset: -1
 			}).addTo(this.leaflet_map);
 			this.leaflet_map.setView([47.859,16.0457],9);
-
-			//SVG Overlay mittels d3.js für Geojson
-			let svg = d3.select(this.leaflet_map.getPanes().overlayPane).append("svg"),g = svg.append("g").attr("class", "leaflet-zoom-hide");
-			
-			
-			
-			//this.leaflet_map.invalidateSize();
+				
+			var svg=L.svg();
+			svg.addTo(this.leaflet_map);
+			//console.log("Overlays: "+d3.select(".leaflet-overlay-pane").count());
+			d3.select(".leaflet-overlay-pane")
+				.select("svg")
+				.attr("id","svg_overlay");
+			//Alle Elemente innerhalb des SVG Tags im oberen Template werden an ein Leaflet Overlay angehängt
+	
 			
 			//this.show_image();
-            //this.on_resize();
+            this.on_resize();
         },
 		
-		
+	
+		updateMarkers() {
+			this.leaflet_map.invalidateSize();
+			var stations=this.$store.getters.station_meta;
+			
+			for(var i=0;i<stations.length;i++)	{
+				var latlng=new L.LatLng(stations[i].y, stations[i].x);
+				var elementid=stations[i].id.replace(/\./g, '-');
+				var stationMax=elementid+"_max";
+				var stationCurrent=elementid+"_current";
+				
+				d3.select("*[id$="+stationMax+"]").attr("cx",this.leaflet_map.latLngToLayerPoint(latlng).x);
+				d3.select("*[id$="+stationMax+"]").attr("cy",this.leaflet_map.latLngToLayerPoint(latlng).y);
+				
+				d3.select("*[id$="+stationCurrent+"]").attr("cx",this.leaflet_map.latLngToLayerPoint(latlng).x);
+				d3.select("*[id$="+stationCurrent+"]").attr("cy",this.leaflet_map.latLngToLayerPoint(latlng).y);
+			}
+			
+			
 
+		},
+		
+		
         calculate_path() {
             const scale = this.get_scales();
             const path = d3.line()
@@ -302,12 +354,27 @@ export default {
         },
 
         on_resize() {
+			console.log("resize");
             var map_container = d3.select("#mapcontainer").node();
-            var map_svg = d3.select("#map");
-            const width = map_container.clientWidth;
-            const height = map_container.clientHeight;
-            map_svg.attr("width", width)
-                   .attr("height", height);
+            var map_svg = d3.select("#svg_template");
+			
+            //const width = map_container.clientWidth;
+            //const height = map_container.clientHeight;
+			//console.log("Width: "+width);
+			
+			var map_bounds = map_container.getBoundingClientRect();
+            map_svg.attr("width", map_bounds.width)
+                   .attr("height", window.innerHeight)
+				   .style("left", map_bounds.left + "px")
+				   .style("top", map_bounds.top + "px");
+			
+			//map_svg.attr("viewBox", "0 0 "+map_bounds.width+" "+window.innerHeight)
+			
+			console.log("width attr"+ map_bounds.width);
+			
+			this.updateMarkers();
+			
+			
             //const scale = height / this.map_image.height;
 
             //const map_image = d3.select("#map_image");
