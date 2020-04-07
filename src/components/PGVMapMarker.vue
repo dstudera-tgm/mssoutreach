@@ -25,18 +25,18 @@
 -->
 
 <template>
-    <g v-bind:id="element_id" class="leaflet-zoom-hide markerGroup" v-on:click>
+    <g v-bind:id="element_id" class="leaflet-zoom-hide markerGroup">
         <circle v-bind:id="element_id + '_current'"
                 :r="pgv_radius"
                 :fill="pgv_fill"
                 :stroke="pgv_stroke"
-                :fill-opacity="current_fill_opacity"/>
+                :fill-opacity="current_fill_opacity" v-on:click="$emit('open-popup',station_id)"/>
 
         <circle v-bind:id="element_id + '_max'"
                 :r="pgv_max_radius"
                 :fill="pgv_max_fill"
                 :stroke="pgv_max_stroke"
-                :fill-opacity="max_fill_opacity"/>
+                :fill-opacity="max_fill_opacity" v-on:click="$emit('open-popup',station_id)"/>
     </g>
 </template>
 
@@ -51,8 +51,6 @@ export default {
         station_id: String,
 		x: String,
 		y: String,
-        x_utm: String,
-        y_utm: String,
         radius_limits: Array,
     },
 
@@ -70,9 +68,10 @@ export default {
 					  .attr('stroke', 'black');
 			marker_svg.lower();
 
-        var map_svg = d3.select("#svg_template");
-        this.svg_matrix = map_svg.node().getScreenCTM();
+        //var map_svg = d3.select("#svg_template");
+       // this.svg_matrix = map_svg.node().getScreenCTM();
 		
+
 		$('#svg_template').find('g').appendTo("#svg_overlay");
 		$('#svg_template').remove();
 
@@ -213,5 +212,8 @@ export default {
 
 
 <style scoped lang="sass">
+.leaflet-pane > svg > g 
+    pointer-events: auto
+    cursor: pointer
 
 </style>

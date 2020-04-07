@@ -25,10 +25,12 @@
 -->
 
 <template>
-    <g v-bind:id="element_id" :transform="legend_transform">
+    <g v-bind:id="element_id"
+	   v-bind:x="this.x"
+	   v-bind:y="this.y">
         <text id="legend_title"
               :x="legend_position.width / 2"
-              :y="-30"
+              :y="30"
               text-anchor="middle">peak-ground-velocity [mm/s]</text>
         <circle v-for="(cur_pgv, k) in pgv_values"
                 v-bind:key="cur_pgv"
@@ -41,7 +43,7 @@
         <text v-for="(cur_pgv, k) in pgv_values"
               v-bind:key="'pgv_legend_label' + k"
               :id="'pgv_legend_label' + k"
-              :x="marker_position[k].x + 30"
+              :x="marker_position[k].x+30"
               :y="marker_position[k].y"
               text-anchor="left"
               :transform="'rotate(90 ' + marker_position[k].x + ' ' + marker_position[k].y +')'"
@@ -63,32 +65,35 @@ export default {
     },
 
     mounted () {
-        //var markers = d3.selectAll("circle[id^='pgv_legend_marker']");
-        //var self = this;
-        //var map_svg = d3.select("#svg_template");
+        console.log("Hallo");
+			//var markers = d3.selectAll("circle[id^='pgv_legend_marker']");
+			//var self = this;
+			var map_svg = d3.select("#svg_overlay");
 
-        this.svg_matrix = map_svg.node().getScreenCTM();
+			this.svg_matrix = map_svg.node().getScreenCTM();
 
-        /*
-        markers.each(function(d, k) {
-            console.log("Processing marker " + k +".", this);
-            var cur_el = d3.select(this);
-            cur_el.attr("cx", self.$props.position.x + k * 200)
-                  .attr("cy", self.$props.position.y);
+			/*
+			markers.each(function(d, k) {
+				console.log("Processing marker " + k +".", this);
+				var cur_el = d3.select(this);
+				cur_el.attr("cx", self.$props.position.x + k * 200)
+					  .attr("cy", self.$props.position.y);
 
-        });
-        */
+			});*/
+			
 
-        for (var k = 0; k < this.pgv_values.length; k++)
-        {
-            this.marker_color[k] = this.pgv_to_color(this.pgv_values[k]);
-        }
+			for (var k = 0; k < this.pgv_values.length; k++)
+			{
+				this.marker_color[k] = this.pgv_to_color(this.pgv_values[k]);
+			}
 
-        window.addEventListener('resize', this.on_resize);
+			window.addEventListener('resize', this.on_resize);
     },
 
     data() {
         return {
+			x: 400,
+			y: 600,
             scale: 1,
             default_font_size: 12,
             svg_matrix: [],
@@ -136,7 +141,7 @@ export default {
                 {
                     space = this.pgv_radius[k];
                     cur_pos.x = space + gap_x;
-                    cur_pos.y = 0;
+                    cur_pos.y = 60;
                 }
                 else
                 {
@@ -148,6 +153,7 @@ export default {
             }
             return position;
         },
+		
 
         legend_position: function() {
             var left_middle = {x: 0, y: 0, width: 0, height: 0};
@@ -208,6 +214,7 @@ export default {
             return 0;    
         },
 
+		
         config: function() {
             return this.$store.getters.map_config.legend;
         },
@@ -226,6 +233,7 @@ export default {
     },
 
     methods: {
+		
         compute_pgv_radius: function(pgv) {
             var cur_pgv = pgv;
             var radius = 4;
@@ -257,6 +265,7 @@ export default {
 
 <style scoped lang="sass">
 
+	
 #legend_title
     font-size: 10pt
 

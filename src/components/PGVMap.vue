@@ -77,32 +77,45 @@
 		<svg id="svg_template">
 				<!--<circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />-->
 				<PGVEventVoronoi event_id="mss_event_20191031T155000"/>
-				<PGVMapMarker v-for="cur_station in stations"
+				<PGVMapMarker v-on:open-popup="setPopUp($event)"
+							  v-for="cur_station in stations"
 							  v-bind:key="cur_station.id"
 							  v-bind:station_id="cur_station.id"
 							  v-bind:x="cur_station.x"
 							  v-bind:y="cur_station.y"/>
 
-				<PGVLegend name="map_legend"/>
+				
 		</svg>
+		
+		<div id="popUpLayer">
+			<component v-bind:is="popUp" 
+					   v-bind:station_id="popUpData.station_id" 
+					   v-bind:name="popUpData.name" 
+					   v-bind:network="popUpData.network"
+					   v-bind:location="popUpData.location"
+					   v-bind:coords="popUpData.coords"
+					   v-bind:utm_coords="popUpData.utm_coords"
+					   v-bind:description="popUpData.description"></component>
+		</div>
+		
+		<svg id="svg_legend" style="position: absolute; bottom:20px; right:0px; z-index:500;" width="320px"
+             height="140">
+			<PGVLegend name="map_legend" v-if="isMounted"/>
+		</svg>
+		
     	</div>
 	
 	
 </template>
+
+
 <script>
-
-
-
-</script>
-	
-
-
-
-<script>	
+import Vue from 'vue';
 import PGVMapMarker from '../components/PGVMapMarker.vue';
 import PGVLegend from '../components/PGVLegend.vue';
 import PGVEventVoronoi from '../components/PGVEventVoronoi.vue';
 import ArchiveEvent from '../components/ArchiveEvent.vue';
+import * as PGVPopUp from "../components/PGVPopUp.vue";
 import * as d3 from "d3";
 import domtoimage from 'dom-to-image';
 
@@ -118,15 +131,26 @@ export default {
         PGVLegend,
         PGVEventVoronoi,
         ArchiveEvent,
+		PGVPopUp,
     },
 
     data() {
         return {
 			leaflet_map: 'undefined',
 			
-			
+			popUp: '',
+			popUpData: {
+				station_id:"",
+				name:"",
+				network:"",
+				location: "",
+				coords: "",
+				utm_coords: "",
+				description: "",
+			},
             map_image: 'undefined',
             map_image_url: '/assets/vue/image/mss_map_with_stations.jpg',
+			isMounted:false,
         };
     },
 
@@ -137,9 +161,8 @@ export default {
     mounted() {
 		//Leaflet map initialisieren
 		this.leaflet_map=L.map("mapid");
-			
-        this.map_image = new Image;
         this.init_map();
+		this.map_image = new Image;
         //this.$watch('radius', this.plot_stations);
         this.$store.commit("LOAD_STATION_METADATA");
 		
@@ -156,11 +179,11 @@ export default {
 		
 		window.addEventListener('resize', this.on_resize);
 		this.leaflet_map.on("moveend", this.updateMarkers);
-		
-					
+		this.isMounted=true;
     },
 
     computed: {
+		
         show_event_warning: {
             get() {
                 return this.$store.getters.map_control.show_event_warning;
@@ -291,7 +314,7 @@ export default {
 				zoomOffset: -1
 			}).addTo(this.leaflet_map);
 			this.leaflet_map.setView([47.859,16.0457],9);
-				
+			
 			var svg=L.svg();
 			svg.addTo(this.leaflet_map);
 			//console.log("Overlays: "+d3.select(".leaflet-overlay-pane").count());
@@ -299,7 +322,7 @@ export default {
 				.select("svg")
 				.attr("id","svg_overlay");
 			//Alle Elemente innerhalb des SVG Tags im oberen Template werden an ein Leaflet Overlay angehängt
-	
+				
 			
 			//this.show_image();
             this.on_resize();
@@ -325,6 +348,30 @@ export default {
 			
 			
 
+		},
+		
+		setPopUp(station_id) {
+			console.log("setPopUp: "+station_id);
+			
+			var curStation="undefined";
+			var stations=this.$store.getters.station_meta;
+			for(var i=0;i<this.$store.getters.station_meta.length;i++) {
+				if(stations[i].id==station_id) {
+					curStation=stations[i];
+				}
+			}
+			console.log("Station ID: "+curStation);
+			
+			this.popUpData.station_id=curStation.id;
+			this.popUpData.name=curStation.name;
+			this.popUpData.network=curStation.network;
+			this.popUpData.location=curStation.location;
+			this.popUpData.coords="x: "+curStation.x+" y: "+curStation.y+" z: "+curStation.z;
+			this.popUpData.utm_coords="x_utm: "+curStation.x_utm+" y_utm: "+curStation.y_utm+" z_utm: "+curStation.z_utm;
+			this.popUpData.description=curStation.description;
+			
+			var popUpComponent=Vue.component("popUp_1",Vue.extend(PGVPopUp.default));
+			this.popUp="popUp_1";
 		},
 		
 		
@@ -394,7 +441,8 @@ export default {
                      link.click();
                 });
         },
-
+		
+		
         on_click() {
             console.log("Clicked the map.");
         },
@@ -406,10 +454,11 @@ export default {
 <style scoped lang="sass">
 $breakpoint-mobile-width: 700px
 $breakpoint-mobile-height: 350px
-
+	
 div#mapid
     height: 100%
     width: 100%
+    cursor: default
 	
 div#mapcontainer
     height: 100%
