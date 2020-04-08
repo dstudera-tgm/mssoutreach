@@ -39,7 +39,8 @@
                 :r="pgv_radius[k]"
                 :cx="marker_position[k].x"
                 :cy="marker_position[k].y"
-                :fill="marker_color[k]"/>
+                :fill="marker_color[k]"
+				:class="marker_color[k]"/>
         <text v-for="(cur_pgv, k) in pgv_values"
               v-bind:key="'pgv_legend_label' + k"
               :id="'pgv_legend_label' + k"
@@ -84,7 +85,9 @@ export default {
 
 			for (var k = 0; k < this.pgv_values.length; k++)
 			{
-				this.marker_color[k] = this.pgv_to_color(this.pgv_values[k]);
+				//Macht das selbe wie this.marker_color[k]=this.pgv_to_color(this.pgv_values[k])
+				this.marker_color.splice(k,1,this.pgv_to_color(this.pgv_values[k]));
+				
 			}
 
 			window.addEventListener('resize', this.on_resize);
@@ -153,7 +156,7 @@ export default {
             }
             return position;
         },
-		
+
 
         legend_position: function() {
             var left_middle = {x: 0, y: 0, width: 0, height: 0};

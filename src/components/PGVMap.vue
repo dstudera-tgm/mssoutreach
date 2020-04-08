@@ -89,6 +89,7 @@
 		
 		<div id="popUpLayer">
 			<component v-bind:is="popUp" 
+					   v-on:close-popup="closePopUp()"
 					   v-bind:station_id="popUpData.station_id" 
 					   v-bind:name="popUpData.name" 
 					   v-bind:network="popUpData.network"
@@ -98,8 +99,7 @@
 					   v-bind:description="popUpData.description"></component>
 		</div>
 		
-		<svg id="svg_legend" style="position: absolute; bottom:20px; right:0px; z-index:500;" width="320px"
-             height="140">
+		<svg id="svg_legend" width="300px" height="140">
 			<PGVLegend name="map_legend" v-if="isMounted"/>
 		</svg>
 		
@@ -374,6 +374,10 @@ export default {
 			this.popUp="popUp_1";
 		},
 		
+		closePopUp() {
+			this.popUp='';	
+		},
+		
 		
         calculate_path() {
             const scale = this.get_scales();
@@ -449,7 +453,16 @@ export default {
     },
 }
 </script>
-
+<style>
+	#svg_legend {
+		background-color:rgba(181,181,181,0.62);
+		position: absolute; 
+		bottom:20px; 
+		right:5px; 
+		z-index:500;
+		border-radius: 25px;
+	}
+</style>
 
 <style scoped lang="sass">
 $breakpoint-mobile-width: 700px

@@ -3,6 +3,7 @@
 
 <template>
 	<div id="popUp" class="ui-widget-content" style="position:absolute; background-color:red;" v-on:popup="setPopUpData">
+		<p><button v-on:click="$emit('close-popup')">Close</button></p>
 		<p v-text="station_id"></p>
 		<p v-text="name"></p>
 		<p v-text="network"></p>
@@ -14,8 +15,6 @@
 </template>
 
 <script>
-import * as d3 from "d3";
-	
 export default {
 	
 	name:"PGVPopUp",
