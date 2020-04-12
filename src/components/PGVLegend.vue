@@ -26,8 +26,8 @@
 
 <template>
     <g v-bind:id="element_id"
-	   v-bind:x="this.x"
-	   v-bind:y="this.y">
+       v-bind:x="this.x"
+       v-bind:y="this.y">
         <text id="legend_title"
               :x="legend_position.width / 2"
               :y="30"

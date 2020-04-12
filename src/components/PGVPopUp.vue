@@ -14,7 +14,10 @@
 	</div>
 </template>
 
+
 <script>
+import $ from 'jquery';	
+	
 export default {
 	
 	name:"PGVPopUp",
@@ -61,7 +64,6 @@ div#popUp
 	top: 40px
 	width:400px
 	height:600px
-	background-color:red
 	padding:3px
 	border: 1px solid black
 	z-index:500

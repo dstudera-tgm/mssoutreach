@@ -208,7 +208,11 @@ export default new Vuex.Store({
         server_state: '',
         current_range: 60000,
         display_period: 600000,
-        //display_period: 60000,
+        settings: {
+			map_type:"osm",
+			show_settings: false,
+			show_legend:true,
+		},
 
         map_config: { 
                      map_limits: {'x_min': 519685.529,
@@ -236,6 +240,10 @@ export default new Vuex.Store({
     },
 
     getters: {
+		settings: state=>{
+			return state.settings;
+		},
+		
         server_state: state => {
             return state.server_state;
         },
@@ -534,6 +542,13 @@ export default new Vuex.Store({
                 //self.plot_stations();
             });
         },
+		
+		reset_stations(state) {
+			state.stations_imported=false;
+			for(var i=0;state.station_meta.length>i;i++){
+				state.stations[i]=state.station_meta.slice();
+			}
+		},
 
         set_map_control(state, payload) {
             Vue.set(state.map_control, payload.property, payload.value);
@@ -549,9 +564,13 @@ export default new Vuex.Store({
                 state.map_control.show_archive_event = payload.pos;
             }
         },
+		set_settings(state,payload) {
+			state.settings=payload;
+		},
+		
     },
 
     actions: {
-
+		
     }
 });

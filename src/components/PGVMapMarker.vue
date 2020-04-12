@@ -42,6 +42,7 @@
 
 
 <script>
+import $ from 'jquery';	
 import * as d3 from "d3";
 
 export default {
@@ -55,17 +56,18 @@ export default {
     },
 
     mounted () {
-        var scales = this.scales;
+		console.log("MOUNTED PGV MARKER")
+        //var scales = this.scales;
         
 		var marker_svg = d3.select("#" + this.element_id + "_current");
 			marker_svg.attr("cx", this.x)
-					  .attr("cy", this.y)
-					  .attr('stroke', 'black');
+                      .attr("cy", this.y)
+                      .attr('stroke', 'black');
 
 			marker_svg = d3.select("#" + this.element_id + "_max");
 			marker_svg.attr("cx", this.x)
-					  .attr("cy", this.y)
-					  .attr('stroke', 'black');
+                      .attr("cy", this.y)
+                      .attr('stroke', 'black');
 			marker_svg.lower();
 
         //var map_svg = d3.select("#svg_template");

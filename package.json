@@ -12,6 +12,8 @@
     "core-js": "^2.6.5",
     "d3": "^5.9.7",
     "dom-to-image": "^2.6.0",
+    "jquery": "^3.5.0",
+    "leaflet": "^1.6.0",
     "node-sass": "^4.13.0",
     "plotly.js": "^1.48.3",
     "sass": "^1.23.7",
@@ -25,6 +27,7 @@
     "vue-loader": "^15.7.1",
     "vue-native-websocket": "^2.0.13",
     "vue-socket.io": "^3.0.7",
+    "vue2-leaflet": "^2.5.2",
     "vuex": "^3.1.1",
     "webpack": "^4.41.2"
   },
