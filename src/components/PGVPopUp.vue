@@ -2,23 +2,25 @@
 
 
 <template>
-	<div id="popUp" class="ui-widget-content" style="position:absolute; background-color:red;" v-on:popup="setPopUpData">
-		<p><button v-on:click="$emit('close-popup')">Close</button></p>
-		<p v-text="station_id"></p>
-		<p v-text="name"></p>
-		<p v-text="network"></p>
-		<p v-text="location"></p>
-		<p v-text="coords"></p>
-		<p v-text="utm_coords"></p>
-		<p v-text="description"></p>
+	<div id="popUp" class="ui-widget-content" style="position:absolute; background-color:white;" v-on:popup="setPopUpData">
+		<p style="text-align:right"><button v-on:click="$emit('close-popup')">x</button></p>
+		<h2>{{name}}</h2>
+		<h3 style="background-color:LightGray">Stationsmetadaten</h3>
+		<p><b>ID:</b> {{station_id}}</p>		
+		<p><b>Netzwerk</b> {{network}}</p>
+		<p><b>Standort:</b> {{location}}</p>
+		<p><b>Koordinaten:</b> {{coords}}</p>
+		<p><b>UTM Koordinaten:</b> {{utm_coords}}</p>
+		<p><b>Beschreibung:</b> {{description}}</p>
 		<p><button v-on:click="$emit('add-popup')">Add Popup</button></p>
+		
 	</div>
 </template>
 
 
 <script>
 
-require('../../public/assets/vue/js/jquery-ui-1.12.1/jquery-ui.min.js');
+
 export default {
 
 	
@@ -35,7 +37,7 @@ export default {
 	},
 	
 	mounted() {
-		
+		// eslint-disable-next-line
 		$("#popUp").draggable({
 			scroll: false
 		});
@@ -64,13 +66,18 @@ export default {
 
 <style scoped lang="sass">
 div#popUp
-	top: 40px
+	position:relative
+	top: 200px
 	width:400px
 	height:600px
-	padding:3px
-	border: 1px solid black
+	margin-left:10px
+	padding:10px
+	border: 2px solid black
 	z-index:500
-	
-	
+
+div#addPopUp
+	position:absolute
+	bottom:0
+	right:0
 	
 </style>
