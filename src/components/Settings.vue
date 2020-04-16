@@ -12,10 +12,7 @@
 				Close
 			</button>
 			
-			<form>
-              <input type="radio" @change="change_map($event)" name="some-radios" value="osm">Openstreetmap<br>
-              <input type="radio" @change="change_map($event)" name="some-radios" value="basemap">Basemap<br>
-			</form>
+
 		</div>
 	</div>
 	
@@ -34,7 +31,6 @@ export default {
 		return {
 			settings: {
 				show_settings: false,
-				map_type: "",
 			},
 		}
 	},
@@ -54,9 +50,6 @@ export default {
 			$(".leaflet-control-zoom").css("visibility", "visible");
 		},
 		
-		change_map(event) {
-			this.settings.map_type=event.target.value;
-		},
 	},
 	
 }

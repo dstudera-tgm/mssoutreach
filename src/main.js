@@ -29,6 +29,8 @@ import LWZDisplay from './components/LWZDisplay.vue'
 import store from './store/store.js'
 import VueNativeSock from 'vue-native-websocket'
 
+
+
 Vue.config.productionTip = false
 
 Vue.use(VueNativeSock,

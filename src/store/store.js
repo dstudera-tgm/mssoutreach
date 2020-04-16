@@ -209,10 +209,10 @@ export default new Vuex.Store({
         current_range: 60000,
         display_period: 600000,
         settings: {
-			map_type:"osm",
 			show_settings: false,
 			show_legend:true,
 		},
+		popUpStored:[],
 
         map_config: { 
                      map_limits: {'x_min': 519685.529,
@@ -240,6 +240,14 @@ export default new Vuex.Store({
     },
 
     getters: {
+		popUpStored_length: state=>{
+			return state.popUpStored.length;
+		},
+		
+		popUpStored: state=>{
+			return state.popUpStored;
+		},
+		
 		settings: state=>{
 			return state.settings;
 		},
@@ -566,6 +574,10 @@ export default new Vuex.Store({
         },
 		set_settings(state,payload) {
 			state.settings=payload;
+		},
+		
+		add_pop_up(state,payload) {
+			state.popUpStored.push(payload);
 		},
 		
     },

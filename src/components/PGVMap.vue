@@ -68,8 +68,10 @@
 
             <PGVLegend name="map_legend"/>
         </svg>-->
+		
 		<Settings/>
-	
+		
+		
 		
 		<div id="mapid">
 	
@@ -92,6 +94,7 @@
 		<div id="popUpLayer">
 			<component v-bind:is="popUp" 
                        v-on:close-popup="closePopUp()"
+                       v-on:add-popup="addPopUp()"
                        v-bind:station_id="popUpData.station_id" 
                        v-bind:name="popUpData.name" 
                        v-bind:network="popUpData.network"
@@ -100,6 +103,9 @@
                        v-bind:utm_coords="popUpData.utm_coords"
                        v-bind:description="popUpData.description"></component>
 		</div>
+		
+		<PGVPopUpPerma v-if="show_perma"
+                       v-on:close-perma="closePerma()"/>
 		
 		<svg id="svg_legend" width="300px" height="140">
 			<PGVLegend name="map_legend" v-if="showLegend"/>
@@ -117,6 +123,7 @@ import PGVMapMarker from '../components/PGVMapMarker.vue';
 import PGVLegend from '../components/PGVLegend.vue';
 import PGVEventVoronoi from '../components/PGVEventVoronoi.vue';
 import Settings from '../components/Settings.vue';
+import PGVPopUpPerma from '../components/PGVPopUpPerma.vue';
 import ArchiveEvent from '../components/ArchiveEvent.vue';
 import * as PGVPopUp from "../components/PGVPopUp.vue";
 import * as d3 from "d3";
@@ -139,6 +146,7 @@ export default {
         ArchiveEvent,
 		PGVPopUp,
 		Settings,
+		PGVPopUpPerma
     },
 
     data() {
@@ -159,6 +167,7 @@ export default {
             map_image: 'undefined',
             map_image_url: '/assets/vue/image/mss_map_with_stations.jpg',
 			showLegend:false,
+			show_perma:true,
         };
     },
 
@@ -390,6 +399,7 @@ export default {
 			}
 			console.log("Station ID: "+curStation);
 			
+			this.popUpData.popUpId="pop-"+curStation.id;
 			this.popUpData.station_id=curStation.id;
 			this.popUpData.name=curStation.name;
 			this.popUpData.network=curStation.network;
@@ -404,6 +414,22 @@ export default {
 		
 		closePopUp() {
 			this.popUp='';	
+		},
+		
+		//Hängt das offene Popup an die Perma anzeige an
+		addPopUp() {
+			this.$store.commit("add_pop_up",this.popUpData);
+			this.showPerma();
+			
+			this.closePopUp();
+		},
+		
+		showPerma() {
+			this.show_perma=true;
+		},
+		
+		closePerma() {
+			this.show_perma=false;
 		},
 		
 		

@@ -11,14 +11,16 @@
 		<p v-text="coords"></p>
 		<p v-text="utm_coords"></p>
 		<p v-text="description"></p>
+		<p><button v-on:click="$emit('add-popup')">Add Popup</button></p>
 	</div>
 </template>
 
 
 <script>
-import $ from 'jquery';	
-	
+
+require('../../public/assets/vue/js/jquery-ui-1.12.1/jquery-ui.min.js');
 export default {
+
 	
 	name:"PGVPopUp",
 	
@@ -39,6 +41,7 @@ export default {
 		});
 		
 	},
+	
 	
 	data() {
 		return {	
