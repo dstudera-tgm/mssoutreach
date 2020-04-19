@@ -3,6 +3,12 @@
 		<h1>Stations:</h1>
 		<p><button v-on:click="$emit('close-perma')">Close</button></p>
 		<div v-if="popUpStored.length">
+			<template v-for="cur_popup in popUpStored">
+				<component v-bind:is="cur_popup" id="permaPopUps"></component>
+			</template>
+			
+			
+			<!--
 			<PGVPopUp 
                        v-for="cur_popup in popUpStored"
                        v-bind:key="cur_popup.station_id"
@@ -12,7 +18,7 @@
                        v-bind:location="cur_popup.location"
                        v-bind:coords="cur_popup.coords"
                        v-bind:utm_coords="cur_popup.utm_coords"
-                       v-bind:description="cur_popup.description"/>
+                       v-bind:description="cur_popup.description"/>-->
 		</div>
 	
 	</div>
@@ -40,8 +46,8 @@ export default {
 		}
 	},
 	
-	created() {
-		console.log("Length: " +this.$store.popUpStored_length);
+	mounted() {
+		console.log("Length: " +this.popUpStored.length);
 	},
 	
 	computed: {
@@ -54,11 +60,17 @@ export default {
 
 
 </script>
+<style scoped>
+	#permaPopUps{
+		position:relative;
+		margin-bottom:5px;
+	}
+</style>
 
 <style scoped lang="sass">
 div#permaPopUp
 	height:100%
-	width:300px
+	width:350px
 	right:0px
 	top:0px
 	z-index:800

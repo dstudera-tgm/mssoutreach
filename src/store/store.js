@@ -211,6 +211,7 @@ export default new Vuex.Store({
         settings: {
 			show_settings: false,
 			show_legend:true,
+			show_map_info:true,
 		},
 		popUpStored:[],
 
@@ -579,6 +580,10 @@ export default new Vuex.Store({
 		add_pop_up(state,payload) {
 			state.popUpStored.push(payload);
 		},
+		
+		show_settings(state,payload) {
+			state.settings.show_settings=payload;
+		}
 		
     },
 

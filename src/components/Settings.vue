@@ -27,11 +27,12 @@ export default {
 
 	},
 	
+	created() {
+	},
+	
 	data() {
 		return {
-			settings: {
-				show_settings: false,
-			},
+			
 		}
 	},
 	
@@ -41,15 +42,23 @@ export default {
 	
 	methods: {
 		activate_settings() {
-			this.settings.show_settings=true;
+			this.$store.commit("show_settings",true);
 			$(".leaflet-control-zoom").css("visibility", "hidden");
+			$(".leaflet-control-layers").css("visibility", "hidden");
 		},
 		
 		close_settings() {
-			this.settings.show_settings=false;
+			this.$store.commit("show_settings",false);
 			$(".leaflet-control-zoom").css("visibility", "visible");
+			$(".leaflet-control-layers").css("visibility", "visible");
 		},
 		
+		
+	},
+	computed: {
+		settings: function() {
+			return this.$store.getters.settings;
+		},
 	},
 	
 }

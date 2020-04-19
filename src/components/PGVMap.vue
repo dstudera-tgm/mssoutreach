@@ -101,7 +101,8 @@
                        v-bind:location="popUpData.location"
                        v-bind:coords="popUpData.coords"
                        v-bind:utm_coords="popUpData.utm_coords"
-                       v-bind:description="popUpData.description"></component>
+                       v-bind:description="popUpData.description"
+					   ></component>
 		</div>
 		
 		<PGVPopUpPerma v-if="show_perma"
@@ -110,6 +111,27 @@
 		<svg id="svg_legend" width="300px" height="140">
 			<PGVLegend name="map_legend" v-if="showLegend"/>
 		</svg>
+
+		
+		<div id="map_info">last data: {{ data_time_range[1] }} UTC<br>
+                           first data: {{ data_time_range[0] }} UTC<br>
+                           server state: {{ server_state }}<br><br>
+                           <b>event monitor</b><br>
+                           <div id="current_event">
+                               start: {{ current_event_start }}<br>
+                               end: {{ current_event_end }}<br>
+                               state: {{ current_event_state }}<br>
+                               max PGV: {{ (current_event_max_pgv * 1000).toFixed(3) + ' mm/s'}}<br><br>
+                           </div>
+
+                           <b>archived events</b><br>
+                           <ArchiveEvent v-for="(cur_event, index) in event_archive"
+                                         v-bind:key="cur_event.start_time"
+                                         v-bind:id="cur_event.start_time"
+                                         v-bind:pos="index"/>
+
+        </div>
+
 		
        </div>
 	
@@ -166,8 +188,8 @@ export default {
 			allOptions: 'undefined',
             map_image: 'undefined',
             map_image_url: '/assets/vue/image/mss_map_with_stations.jpg',
-			showLegend:false,
-			show_perma:true,
+			showLegend:false,	//toggles the visibility off the legend
+			show_perma:false,	//Toggles the PGVPopUpPerma Area
         };
     },
 
@@ -405,7 +427,7 @@ export default {
 			this.popUpData.network=curStation.network;
 			this.popUpData.location=curStation.location;
 			this.popUpData.coords="x: "+curStation.x+" y: "+curStation.y+" z: "+curStation.z;
-			this.popUpData.utm_coords="x_utm: "+curStation.x_utm+" y_utm: "+curStation.y_utm+" z_utm: "+curStation.z_utm;
+			this.popUpData.utm_coords="x_utm: "+curStation.x_utm+" y_utm: "+curStation.y_utm;
 			this.popUpData.description=curStation.description;
 			
 			Vue.component("popUp_1",Vue.extend(PGVPopUp.default));
@@ -418,9 +440,8 @@ export default {
 		
 		//Hängt das offene Popup an die Perma anzeige an
 		addPopUp() {
-			this.$store.commit("add_pop_up",this.popUpData);
+			this.$store.commit("add_pop_up",Vue.component(this.popUp));
 			this.showPerma();
-			
 			this.closePopUp();
 		},
 		
@@ -433,37 +454,9 @@ export default {
 		},
 		
 		
-		setBasemap(map_type) {
 			
 			
-			switch(map_type) {
-				case "osm":
-					this.cur_layer=L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-						maxZoom: 18,
-						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-							'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-							'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-						id: 'mapbox/streets-v11',
-						tileSize: 512,
-						zoomOffset: -1
-					}).addTo(this.leaflet_map);
-					break;
-				case "basemap":
-					//Auswahl der Karte via https://www.basemap.at/wmts/1.0.0/WMTSCapabilities.xml
-					this.cur_layer=L.tileLayer("http://{s}.wien.gv.at/basemap/bmapoverlay/normal/google3857/{z}/{y}/{x}.png", {
-						subdomains : ['maps', 'maps1', 'maps2', 'maps3', 'maps4'],
-						attribution: '&copy; <a href="http://basemap.at">Basemap.at</a>',
-						id: 'mapbox/streets-v11',
-						tileSize: 512,
-						zoomOffset: -1,
-						maxZoom: 18,
-					}).addTo(this.leaflet_map);
-					break;
-					
-			}
-			
-			
-		},
+		
 		
         calculate_path() {
             const scale = this.get_scales();
@@ -548,6 +541,15 @@ export default {
 		z-index:500;
 		border-radius: 25px;
 	}
+	
+	#map_info{
+		background-color:rgba(181,181,181,0.62);
+		position: absolute; 
+		top:5px; 
+		right:5px; 
+		z-index:500;
+		border-radius: 25px;
+	}
 </style>
 
 <style scoped lang="sass">
@@ -572,6 +574,7 @@ div#map_info
     font-size: 10pt
     font-family: Helvetica, sans-serif
     padding: 5px
+    z-index:500
 
 div#map_config
     position: absolute
