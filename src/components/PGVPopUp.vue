@@ -52,7 +52,7 @@ export default {
 			scroll: false
 		});
 		if(!this.atttached) {
-			
+			// eslint-disable-next-line
 			$( "#popUp" ).resizable({
 				lsoResize: "#content",
 				maxHeight: 600,

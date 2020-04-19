@@ -79,7 +79,6 @@
 		</div>
 		
 		<svg id="svg_template">
-				<!--<circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />-->
 				<PGVEventVoronoi event_id="mss_event_20191031T155000"/>
 				<PGVMapMarker v-on:open-popup="setPopUp($event)"
                               v-for="cur_station in stations"
@@ -102,7 +101,7 @@
                        v-bind:coords="popUpData.coords"
                        v-bind:utm_coords="popUpData.utm_coords"
                        v-bind:description="popUpData.description"
-					   ></component>
+                       ></component>
 		</div>
 		
 		<PGVPopUpPerma v-if="show_perma"
