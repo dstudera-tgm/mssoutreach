@@ -25,24 +25,25 @@
 -->
 
 <template>
-    <g v-bind:id="element_id" class="leaflet-zoom-hide markerGroup">
+    <g v-bind:id="element_id"
+       class="leaflet-zoom-hide markerGroup"
+       v-on:click="$emit('open-popup',station_id)">
         <circle v-bind:id="element_id + '_current'"
                 :r="pgv_radius"
                 :fill="pgv_fill"
                 :stroke="pgv_stroke"
-                :fill-opacity="current_fill_opacity" v-on:click="$emit('open-popup',station_id)"/>
+                :fill-opacity="current_fill_opacity" />
 
         <circle v-bind:id="element_id + '_max'"
                 :r="pgv_max_radius"
                 :fill="pgv_max_fill"
                 :stroke="pgv_max_stroke"
-                :fill-opacity="max_fill_opacity" v-on:click="$emit('open-popup',station_id)"/>
+                :fill-opacity="max_fill_opacity"/>
     </g>
 </template>
 
 
 <script>
-import $ from 'jquery';	
 import * as d3 from "d3";
 
 export default {
@@ -50,42 +51,29 @@ export default {
 
     props: {
         station_id: String,
-		x: String,
-		y: String,
+        x_utm: Number,
+        y_utm: Number,
         radius_limits: Array,
     },
 
     mounted () {
-		console.log("MOUNTED PGV MARKER")
-        //var scales = this.scales;
-        
-		var marker_svg = d3.select("#" + this.element_id + "_current");
-			marker_svg.attr("cx", this.x)
-                      .attr("cy", this.y)
-                      .attr('stroke', 'black');
+        var scales = this.scales;
+        var marker_svg = d3.select("#" + this.element_id + "_current");
+        marker_svg.attr("cx", scales.x(this.x_utm))
+                  .attr("cy", scales.y(this.y_utm))
+                  .attr('stroke', 'black');
 
-			marker_svg = d3.select("#" + this.element_id + "_max");
-			marker_svg.attr("cx", this.x)
-                      .attr("cy", this.y)
-                      .attr('stroke', 'black');
-			marker_svg.lower();
-
-        //var map_svg = d3.select("#svg_template");
-       // this.svg_matrix = map_svg.node().getScreenCTM();
-		
-
-		$('#svg_template').find('g').appendTo("#svg_overlay");
-		$('#svg_template').remove();
-
-        window.addEventListener('resize', this.on_resize);
+        marker_svg = d3.select("#" + this.element_id + "_max");
+        marker_svg.attr("cx", scales.x(this.x_utm))
+                  .attr("cy", scales.y(this.y_utm))
+                  .attr('stroke', 'black');
+        marker_svg.lower();
     },
 
     data() {
         return {
-            scale: 1,
             current_fill_opacity: 1.0,
             max_fill_opacity: 0.6,
-            svg_matrix: [],
         };
     },
 
@@ -95,12 +83,7 @@ export default {
         },
 
         svg_scale: function() {
-            var scale = 1;
-            if (this.svg_matrix.a)
-            {
-                scale = this.svg_matrix.a
-            }
-            return scale;
+            return this.$store.getters.svg_scale;
         },
 
         pgv: function() {
@@ -116,7 +99,7 @@ export default {
             var radius = scales.radius(0);
 
             if (this.pgv) {
-                radius = this.scale * scales.radius(this.pgv);
+                radius = scales.radius(this.pgv);
             }
 
             return radius / this.svg_scale;
@@ -127,7 +110,7 @@ export default {
 
             if (this.pgv_max) {
                 const scales = this.scales;
-                radius = this.scale * scales.radius(this.pgv_max);
+                radius = scales.radius(this.pgv_max);
             }
 
             return radius / this.svg_scale;
@@ -197,16 +180,11 @@ export default {
     },
 
     methods: {
-		pgv_to_color(pgv) {
-			// Convert the PGV value [m/s] to a color value.
-			const colormap = this.$store.getters.map_config.colormap;
-			var color = colormap(this.scales.color(pgv));
-			return color;
-		},
-
-        on_resize: function() {
-            var map_svg = d3.select("#map");
-            this.svg_matrix = map_svg.node().getScreenCTM();
+        pgv_to_color(pgv) {
+            // Convert the PGV value [m/s] to a color value.
+            const colormap = this.$store.getters.map_config.colormap;
+            var color = colormap(this.scales.color(pgv));
+            return color;
         },
     },
 }
@@ -214,7 +192,9 @@ export default {
 
 
 <style scoped lang="sass">
-.leaflet-pane > svg > g 
+// Leaflet disables the clicking on individual svg elements.
+// Set the pointer-events to make the markers clickable.
+.leaflet-pane #current_pgv_marker > g 
     pointer-events: auto
     cursor: pointer
 

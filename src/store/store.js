@@ -25,6 +25,8 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
 import * as d3 from "d3";
+import * as log from 'loglevel';
+import * as moment from 'moment';
 
 Vue.use(Vuex)
 
@@ -47,33 +49,45 @@ function handle_msg_soh(msg_id, payload, state) {
 function handle_msg_data(msg_id, payload, state) {
     switch (msg_id) {
         case 'pgv':
-            console.log("Received pgv data.");
+            var time_data = [];
+            state.logger.debug("Received pgv data.");
             state.server_state = 'online'
             for (var key in payload)
             {
                 if (key in state.pgv_data)
                 {
-                    //console.log("Key found: " + key)
+                    for (let k in payload[key].time)
+                    {
+                        time_data[k] = moment.utc(payload[key].time[k]);
+                        //state.logger.debug(payload[key].time[k] + ' :: ' + time_data[k].format());
+                    }
                     state.pgv_data[key].data = state.pgv_data[key].data.concat(payload[key].data)
                     state.pgv_data[key].time = state.pgv_data[key].time.concat(payload[key].time)
+                    //state.pgv_data[key].time = state.pgv_data[key].time.concat(time_data)
 
                 }
                 else
                 {
                     // Use the Vue.set function to ensure, that the store
                     // tracks the changes of the object elements.
+                    for (let k in payload[key].time)
+                    {
+                        time_data[k] = moment.utc(payload[key].time[k]);
+                        state.logger.debug(payload[key].time[k] + ' :: ' + time_data[k]);
+                    }
                     Vue.set(state.pgv_data, key, {})
                     Vue.set(state.pgv_data[key], "data", payload[key].data)
                     Vue.set(state.pgv_data[key], "time", payload[key].time)
+                    //Vue.set(state.pgv_data[key], "time", time_data)
                 }
             }
             // Trim the data to the display range.
             trim_data(state);
-            console.log("Finished processing the pgv data.");
+            state.logger.debug("Finished processing the pgv data.");
             break;
 
         case 'pgv_archive':
-            console.log("Received pgv archive data.");
+            state.logger.debug("Received pgv archive data.");
             state.server_state = 'archive received'
             // Clear the pgv_data.
             state.pgv_data = {}
@@ -98,22 +112,22 @@ function handle_msg_data(msg_id, payload, state) {
             break;
 
         case 'detection_result':
-            console.log("Received a detection result");
+            state.logger.debug("Received a detection result");
             state.detection_result_data = payload;
             break;
 
         case 'event_data':
-            console.log("Received event data.");
+            state.logger.debug("Received event data.");
             state.event_data = payload;
             break;
 
         case 'event_warning':
-            console.log("Received event warning.");
+            state.logger.debug("Received event warning.");
             state.event_warning = payload;
             break;
 
         case 'event_archive':
-            console.log("Received an event archive.");
+            state.logger.debug("Received an event archive.");
             state.event_archive = payload;
             break;
     }
@@ -125,7 +139,6 @@ function handle_msg_data(msg_id, payload, state) {
 function trim_data(state) {
     for (var key in state.pgv_data)
     {
-        //console.log("display_range: " + display_range);
         var display_range = get_display_range(state);
         var display_start = new Date(new Date(display_range[0]) - 1000 * 10);
 
@@ -143,8 +156,6 @@ function trim_data(state) {
 
         if (crop_ind > 0)
         {
-            //console.log("First value in display range: " + state.pgv_data[key].time[crop_ind])
-            //console.log("crop_index: " + crop_ind)
             state.pgv_data[key].time = state.pgv_data[key].time.slice(crop_ind);
             state.pgv_data[key].data = state.pgv_data[key].data.slice(crop_ind);
         }
@@ -179,9 +190,9 @@ function get_display_range(state) {
 
 function to_isoformat(date) {
     Number.prototype.pad = function(size) {
-      var s = String(this);
-      while (s.length < (size || 2)) {s = "0" + s;}
-      return s;
+        var s = String(this);
+        while (s.length < (size || 2)) {s = "0" + s;}
+        return s;
     }
 
     // The month is zero-based (January = 0). Add 1 to the month.
@@ -194,9 +205,11 @@ function to_isoformat(date) {
 
 export default new Vuex.Store({
     state: {
+        log_level: 'info',
+        logger: log.getLogger("store"),
         stations: [],
         station_meta: [],
-		stations_imported:false,
+        stations_imported:false,
         pgv_data: {},
         detection_result_data: {},
         event_data: {},
@@ -208,51 +221,77 @@ export default new Vuex.Store({
         server_state: '',
         current_range: 60000,
         display_period: 600000,
+        svg_scale: 1,
         settings: {
-			show_settings: false,
-			show_legend:true,
-			show_map_info:true,
-		},
-		popUpStored:[],
+            show_settings: false,
+            show_legend:true,
+            show_map_info:true,
+        },
+        popUpStored:[],
 
         map_config: { 
-                     map_limits: {'x_min': 519685.529,
-                                  'y_min': 5252085.484,
-                                  'x_max': 672085.529,
-                                  'y_max': 5347335.484},
-                     size: {'width': 4000,
-                            'height': 2500},
-                     marker_radius_limits: [5, 20],
-                     pgv_limits: [1e-6, 1e-2],
-                     colormap: d3.interpolatePlasma,
-                     legend: { values: [1e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2],
-                               position: 'bottom-right',
-                               margin: 20,
-                             },
-                    },
+            map_limits: {'x_min': 519685.529,
+                'y_min': 5252085.484,
+                'x_max': 672085.529,
+                'y_max': 5347335.484},
+            size: {'width': 4000,
+                'height': 2500},
+            marker_radius_limits: [5, 20],
+            pgv_limits: [1e-6, 1e-2],
+            colormap: d3.interpolatePlasma,
+            legend: { values: [1e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2],
+                position: 'bottom-right',
+                margin: 20,
+            },
+        },
 
         map_control: {
-                        show_event_warning: false,
-                        show_event_detection: false,
-                        show_event_monitor: true,
-                        show_detection_result: false,
-                        show_archive_event: undefined,
+            show_event_warning: false,
+            show_event_detection: false,
+            show_event_monitor: true,
+            show_detection_result: false,
+            show_archive_event: undefined,
+            show_archive_event_cells: true,
+        },
+        prefix_options: {
+            template: '[%t] - %l - %n:',
+            levelFormatter: function (level) {
+                return level.toUpperCase();
+            },
+            nameFormatter: function (name) {
+                return name || 'root';
+            },
+            timestampFormatter: function (date) {
+                return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, '$1');
+            },
+            format: undefined
         },
     },
 
     getters: {
-		popUpStored_length: state=>{
-			return state.popUpStored.length;
-		},
-		
-		popUpStored: state=>{
-			return state.popUpStored;
-		},
-		
-		settings: state=>{
-			return state.settings;
-		},
-		
+        log_level: state => {
+            return state.log_level;
+        },
+
+        logger: state => {
+            return state.logger;
+        },
+
+        prefix_options: state => {
+            return state.prefix_options;
+        },
+
+        popUpStored_length: state=>{
+            return state.popUpStored.length;
+        },
+
+        popUpStored: state=>{
+            return state.popUpStored;
+        },
+
+        settings: state=>{
+            return state.settings;
+        },
         server_state: state => {
             return state.server_state;
         },
@@ -267,7 +306,6 @@ export default new Vuex.Store({
         },
 
         current_pgv_by_station: (state, getters) => (station_id) => {
-            //console.log('Computing current_pgv_by_station.');
             if (station_id in state.pgv_data) {
                 var last_ind = state.pgv_data[station_id].data.length - 1;
                 var cur_pgv = state.pgv_data[station_id].data[last_ind];
@@ -286,13 +324,13 @@ export default new Vuex.Store({
 
         pgv_by_station: (state) => (station_id) => {
             //var last_ind = state.pgv_data[station_id].data.length - 1
-            console.log('Computing pgv_by_station.');
+            state.logger.debug('Computing pgv_by_station.');
             return state.pgv_data[station_id]
         },
 
         // eslint-disable-next-line
         disp_range_max_pgv_by_station: (state, getters) => (station_id) => {
-            console.log('Computing disp_range_max_pgv_by_station.');
+            state.logger.debug('Computing disp_range_max_pgv_by_station.');
             var max_pgv = undefined;
             const time_limit = new Date(new Date(getters.data_time_range[1]) - state.current_range);
             if (station_id in state.pgv_data)
@@ -378,8 +416,8 @@ export default new Vuex.Store({
         station_meta: (state) => {
             return state.station_meta;
         },
-		
-		stations_imported: (state) => {
+
+        stations_imported: (state) => {
             return state.stations_imported;
         },
 
@@ -389,19 +427,19 @@ export default new Vuex.Store({
 
         scales: (state) => {
             const x = d3.scaleLinear().domain([state.map_config.map_limits.x_min, 
-                                               state.map_config.map_limits.x_max])
-                                       .range([0,
-                                               state.map_config.size.width]);
+                state.map_config.map_limits.x_max])
+                .range([0,
+                    state.map_config.size.width]);
             const y = d3.scaleLinear().domain([state.map_config.map_limits.y_min,
-                                               state.map_config.map_limits.y_max])
-                                       .range([state.map_config.size.height,
-                                               0]);
+                state.map_config.map_limits.y_max])
+                .range([state.map_config.size.height,
+                    0]);
             const radius = d3.scaleLog().domain(state.map_config.pgv_limits)
-                                        .range(state.map_config.marker_radius_limits)
-                                        .clamp(true);
+                .range(state.map_config.marker_radius_limits)
+                .clamp(true);
             const color = d3.scaleLog().domain(state.map_config.pgv_limits)
-                                       .range([0, 1])
-                                       .clamp(true);
+                .range([0, 1])
+                .clamp(true);
             return {x, y, radius, color};
         },
 
@@ -429,7 +467,7 @@ export default new Vuex.Store({
                     cur_pgv = trigger_data[k].pgv;
                     for (var m = 0; m < cur_pgv.length; m++)
                     {
-                         max_pgv.push(Math.max.apply(null, cur_pgv[m]));
+                        max_pgv.push(Math.max.apply(null, cur_pgv[m]));
                     }
                 }
                 max_pgv = Math.max.apply(null, max_pgv);
@@ -454,7 +492,7 @@ export default new Vuex.Store({
                     cur_pgv = trigger_data[k].pgv;
                     for (var m = 0; m < cur_pgv.length; m++)
                     {
-                         max_pgv.push(Math.max.apply(null, cur_pgv[m]));
+                        max_pgv.push(Math.max.apply(null, cur_pgv[m]));
                     }
                 }
                 max_pgv = Math.max.apply(null, max_pgv);
@@ -483,6 +521,10 @@ export default new Vuex.Store({
             }
         },
 
+        svg_scale: (state) => {
+            return state.svg_scale;
+        },
+
     },
 
     mutations: {
@@ -490,9 +532,13 @@ export default new Vuex.Store({
             Vue.prototype.$socket = event.currentTarget;
             state.connected = true;
             state.server_state = 'connection opened'
-            console.info("Connected to websocket server.");
+            state.logger.info("Connected to websocket server.");
             //console.info("state: ", state);
             //console.info("event: ", event);
+            var msg = {'class': 'control',
+                'id': 'mode',
+                'payload': 'pgv'};
+            Vue.prototype.$socket.send(JSON.stringify(msg));
         },
 
         SOCKET_ONMESSAGE(state, payload) {
@@ -512,52 +558,58 @@ export default new Vuex.Store({
         SOCKET_ONCLOSE(state, event) {
             state.connected = false;
             state.server_state = 'disconnected'
-            console.info("Disconnected from server.");
-            console.info("event: ", event);
+            state.logger.info("Disconnected from server.");
+            state.logger.info("event: ", event);
         },
 
         SOCKET_ONERROR(state, event) {
             state.server_state = 'error';
-            console.error("Websocket error.");
-            console.error("state: ", state);
-            console.error("event: ", event);
+            state.logger.error("Websocket error.");
+            state.logger.error("state: ", state);
+            state.logger.error("event: ", event);
         },
 
         SOCKET_RECONNECT(state, count) {
             state.server_state = 'reconnecting';
-            console.info("Reconnecting...");
-            console.info("state: ", state);
-            console.info("count: ", count);
+            state.logger.info("Reconnecting...");
+            state.logger.debug("state: ", state);
+            state.logger.info("reconnection count: ", count);
         },
 
         SOCKET_RECONNECT_ERROR(state) {
             state.server_state = 'reconnection error';
-            console.error("Error while reconnecting.");
-            console.error(state);
+            state.logger.error("Error while reconnecting.");
+            state.logger.debug(state);
         },
 
         LOAD_STATION_METADATA(state) {
-            d3.csv("/assets/vue/data/mss_stations_2019_297.csv").then( function(data) {
+            d3.csv("/assets/vue/nrt/data/mss_stations_2020_062.csv").then( function(data) {
                 for (var k = 0; k < data.length; k++)
                 {
                     data[k].id = data[k].network + "." +  
-                                 data[k].name + "." + 
-                                 data[k].location + "." +
-                                 "pgv";
+                        data[k].name + "." + 
+                        data[k].location + "." +
+                        "pgv";
+                    // Convert numbers from string to float.
+                    data[k].x = parseFloat(data[k].x);
+                    data[k].y = parseFloat(data[k].y);
+                    data[k].z = parseFloat(data[k].z);
+                    data[k].x_utm = parseFloat(data[k].x_utm);
+                    data[k].y_utm = parseFloat(data[k].y_utm);
                 }
                 state.station_meta = data;
-				state.stations_imported=true;
-                console.log("Store :: Station metadata loaded.");
+                state.stations_imported = true;
+                state.logger.debug("Station metadata loaded.");
                 //self.plot_stations();
             });
         },
-		
-		reset_stations(state) {
-			state.stations_imported=false;
-			for(var i=0;state.station_meta.length>i;i++){
-				state.stations[i]=state.station_meta.slice();
-			}
-		},
+
+        reset_stations(state) {
+            state.stations_imported=false;
+            for(var i=0;state.station_meta.length>i;i++){
+                state.stations[i]=state.station_meta.slice();
+            }
+        },
 
         set_map_control(state, payload) {
             Vue.set(state.map_control, payload.property, payload.value);
@@ -573,21 +625,32 @@ export default new Vuex.Store({
                 state.map_control.show_archive_event = payload.pos;
             }
         },
-		set_settings(state,payload) {
-			state.settings=payload;
-		},
-		
-		add_pop_up(state,payload) {
-			state.popUpStored.push(payload);
-		},
-		
-		show_settings(state,payload) {
-			state.settings.show_settings=payload;
-		}
-		
+
+        compute_svg_scale(state) {
+            var scale = 1;
+            var map_svg = d3.select("#map");
+            var svg_matrix = map_svg.node().getScreenCTM();
+            if (svg_matrix.a)
+            {
+                scale = svg_matrix.a
+            }
+            state.svg_scale = scale;
+        },
+
+        set_settings(state,payload) {
+            state.settings=payload;
+        },
+
+        add_pop_up(state,payload) {
+            state.popUpStored.push(payload);
+        },
+
+        show_settings(state,payload) {
+            state.settings.show_settings=payload;
+        }
     },
 
     actions: {
-		
+
     }
 });
