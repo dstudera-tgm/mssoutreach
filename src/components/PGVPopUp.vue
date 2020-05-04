@@ -2,21 +2,22 @@
 
 
 <template>
-    <div id="popUp" class="ui-widget-content" style="position:absolute; background-color:white;" v-on:popup="setPopUpData">
+    <div id="popUp" class="ui-widget-content position-left off-canvas"  v-on:popup="setPopUpData" data-off-canvas data-transition="overlap">
+
         <div style="text-align:right" id="buttonsContainer">
             <button v-on:click="$emit('add-popup')" id="addButton">
-                <img id="addIcon" v-bind:src="add_icon_path">
+                <i class="step fi-lock size-18"></i>
             </button>
 
-            <button v-on:click="$emit('close-popup')" id="closeButton">
-                <img id="closeIcon" v-bind:src="close_icon_path">
-            </button>
+             <button v-on:click="$emit('close-popup')" class="close-button closeButton" aria-label="Close alert" type="button" data-close>
+                <span aria-hidden="true">&times;</span>
+              </button>
 
         </div>
         <h2 id="content">{{name}}</h2>
         <p><b>latest PGV:</b> {{ (pgv * 1000).toFixed(3) }} mm/s</p> 
         <p><b>max. PGV:</b> {{ (pgv_max * 1000).toFixed(3) }} mm/s</p> 
-        <h3 style="background-color:LightGray"  id="content">Stationsmetadaten</h3>
+        <h3 class="popUpHeading"  id="content">Stationsmetadaten</h3>
         <p id="content"><b>ID:</b> {{station_id}}</p>		
         <p id="content"><b>Netzwerk</b> {{network}}</p>
         <p id="content"><b>Standort:</b> {{location}}</p>
@@ -54,14 +55,7 @@ export default {
             scroll: false
         });
         if(!this.atttached) {
-            // eslint-disable-next-line
-            $( "#popUp" ).resizable({
-                lsoResize: "#content",
-                maxHeight: 600,
-                maxWidth: 500,
-                minHeight: 480,
-                minWidth: 250,
-            });
+
         }
 
 
@@ -107,19 +101,25 @@ export default {
 
 <style scoped>
     #popUp{
-        position:relative;
         display:inline-block;
-        width:300px;
-        height:480px;
-
-
+        width:30%;
+        height:450px;
+        left:250px;
+        top: 245px;
+        font-size:15px;
+        
+        overflow-x:hidden;
         margin: 0px auto;
         background-color: #E87B10;
-        border-radius: 25px;
+
     }
-    #addPopUp{
-        position:absolute;
+    
+    .popUpHeading {
+        background-color:LightGray;
+        width:90%;
     }
+    
+
     #closeButton{
         position:relative;
         right:20px;
@@ -128,17 +128,11 @@ export default {
         width:100%;
         position:absolute;
     }
-    #closeIcon{
-        width:22px;
-        height:22px;
-    }
-    #addIcon{
-        width:22px;
-        height:22px;
-    }
+
     #addButton{
         position:relative;
-        right:35px;
+        right:45px;
+        top:10px;
     }
 </style>
 
@@ -147,14 +141,10 @@ export default {
     $attached:false	
 
     div#popUp
-            top: 200px
+            
             padding:0.5em
-            border: 2px solid black
             z-index:500
 
 
-    div#addPopUp
-            bottom:0
-            right:0
 	
 </style>

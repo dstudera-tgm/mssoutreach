@@ -27,7 +27,7 @@
 <template>
     <g v-bind:id="element_id"
        class="leaflet-zoom-hide markerGroup"
-       v-on:click="$emit('open-popup',station_id)">
+       v-on:click="$emit('open-popup',station_id)" data-toggle="offCanvas">
         <circle v-bind:id="element_id + '_current'"
                 :r="pgv_radius"
                 :fill="pgv_fill"

@@ -27,7 +27,7 @@
 
 <template>
     <!--<div id="mapcontainer" @click.ctrl="capture_map">-->
-    <div id="mapcontainer">
+    <div id="mapcontainer" class="off-canvas-content" data-off-canvas-content>
         <!--
         <Settings/>
         -->
@@ -58,7 +58,7 @@
         </svg>
         <!-- End of templates. -->
 
-        <div id="popUpLayer">
+        <div id="popUpLayer" off-canvas-wrapper>
             <component v-bind:is="popUp" 
                      v-on:close-popup="closePopUp()"
                      v-on:add-popup="addPopUp()"
@@ -69,7 +69,7 @@
                      v-bind:coords="popUpData.coords"
                      v-bind:utm_coords="popUpData.utm_coords"
                      v-bind:description="popUpData.description"
-             ></component>
+                     data-toggle="offCanvas"></component>
         </div>
 
         <PGVPopUpPerma v-if="show_perma"
@@ -496,6 +496,7 @@ export default {
     z-index:500;
     border-radius: 25px;
 }
+
 </style>
 
 <style scoped lang="sass">
