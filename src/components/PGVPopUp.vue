@@ -48,7 +48,7 @@ export default {
     },
 
     mounted() {
-
+            /*
         //Jquery draggable und resizable für das PopUp aktivieren
         // eslint-disable-next-line
         $("#popUp").draggable({
@@ -56,7 +56,7 @@ export default {
         });
         if(!this.atttached) {
 
-        }
+        }*/
 
 
 
