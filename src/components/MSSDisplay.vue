@@ -35,39 +35,7 @@
                  id="off_canvas_settings"
                  data-off-canvas
                  data-transition="overlap">
-                <!-- Your menu or Off-canvas content goes here -->
-                <button class="close-button" aria-label="Close menu" type="button" data-close>
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <br>
-                <ul class="accordion" data-accordion>
-                    <li class="accordion-item is-active" data-accordion-item>
-                        <!-- Accordion tab title -->
-                        <a href="#" class="accordion-title">Display</a>
-
-                        <!-- Accordion tab content: it would start in the open state due to using the `is-active` state class. -->
-                        <div class="accordion-content" data-tab-content>
-                            <div>
-                                <label>Show event monitor</label>
-                            </div>
-                            <div class="switch">
-                                <input class="switch-input" id="exampleSwitch" type="checkbox" name="exampleSwitch" v-model="show_event_monitor">
-                                <label class="switch-paddle" for="exampleSwitch">
-                                    <span class="show-for-sr">Show event monitor</span>
-                                </label>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="accordion-item" data-accordion-item>
-                        <!-- Accordion tab title -->
-                        <a href="#" class="accordion-title">Other</a>
-
-                        <!-- Accordion tab content: it would start in the open state due to using the `is-active` state class. -->
-                        <div class="accordion-content" data-tab-content>
-                            Content Other
-                        </div>
-                    </li>
-                </ul>
+               <Settings/>
             </div>
         </div>
     </div>
@@ -76,6 +44,7 @@
 <script>
 
 import PGVMap from '../components/PGVMap.vue'
+import Settings from '../components/Settings.vue'
 
 export default {
     name: 'MSSDisplay',
@@ -90,6 +59,7 @@ export default {
     components: {
         // eslint-disable-next-line
         PGVMap,
+        Settings,
     },
 	methods: {
 		forceReloadMap() {

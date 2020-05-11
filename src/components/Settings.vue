@@ -1,19 +1,52 @@
 
 <template>
     <div id="settings_container">
-        <button id="btn_open_settings" v-on:click="activate_settings()" v-if="!settings.show_settings" width="50px" height="50px">
-            Settings
-        </button>
 
-        <div id="settings" v-if="settings.show_settings">
-            <h1>Einstellung</h1>
+        
+         <!-- Your menu or Off-canvas content goes here -->
+                <button class="close-button" aria-label="Close menu" type="button" data-close>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <br>
+                <br>
+                <ul class="accordion" data-accordion>
+                    <li class="accordion-item is-active" data-accordion-item>
+                        <!-- Accordion tab title -->
+                        <a href="#" class="accordion-title">Display</a>
 
-            <button id="btn_close_settings" v-on:click="close_settings()">
-                Close
-            </button>
+                        <!-- Accordion tab content: it would start in the open state due to using the `is-active` state class. -->
+                        <div class="accordion-content" data-tab-content>
+                            <div>
+                                <label>Show event monitor</label>
+                            </div>
+                            <div class="switch">
+                                <input class="switch-input" id="switchEM" type="checkbox" name="switchEM" v-model="show_event_monitor">
+                                <label class="switch-paddle" for="switchEM">
+                                    <span class="show-for-sr">Show event monitor</span>
+                                </label>
+                            </div>
+                            
+                            <div>
+                                <label>Show legend</label>
+                            </div>
+                            <div class="switch">
+                                <input class="switch-input" id="switchL" type="checkbox" name="switchL" v-model="show_legend">
+                                <label class="switch-paddle" for="switchL">
+                                    <span class="show-for-sr">Show legend</span>
+                                </label>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="accordion-item" data-accordion-item>
+                        <!-- Accordion tab title -->
+                        <a href="#" class="accordion-title">Other</a>
 
-
-        </div>
+                        <!-- Accordion tab content: it would start in the open state due to using the `is-active` state class. -->
+                        <div class="accordion-content" data-tab-content>
+                            Content Other
+                        </div>
+                    </li>
+                </ul>
     </div>
 
 </template>
@@ -60,18 +93,36 @@ export default {
         settings: function() {
             return this.$store.getters.settings;
         },
+        show_event_monitor: {
+            get() {
+                return this.$store.getters.map_control.show_event_monitor;
+            },
+
+            set(value) {
+                var payload = {property: 'show_event_monitor',
+                    value: value}
+                this.$store.commit('set_map_control', payload);
+            }
+        },
+        show_legend: {
+            get() {
+                return this.$store.getters.map_control.show_legend;
+            },
+
+            set(value) {
+                var payload = {property: 'show_legend',
+                    value: value}
+                this.$store.commit('set_map_control', payload);
+            }
+        },
+        
     },
 
 }
 </script>
 
 <style scoped>
-#settings {
-    background-color:red;
-    width:400px;
-    height:500px;
 
-}
 
 #btn_open_settings {
     position:absolute;
@@ -79,8 +130,5 @@ export default {
     margin-top:25px;
 }
 
-#settings_container {
-    position:absolute;
-    z-index:500;
-}
+
 </style>

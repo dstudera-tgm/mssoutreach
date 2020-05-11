@@ -28,9 +28,7 @@
 <template>
     <!--<div id="mapcontainer" @click.ctrl="capture_map">-->
     <div id="mapcontainer" class="off-canvas-content" data-off-canvas-content>
-        <!--
-        <Settings/>
-        -->
+
 
         <div id="mapid">
 
@@ -48,15 +46,17 @@
                                  v-bind:y="cur_station.y"/>
             </g>
         </svg>
-
-        <svg id="svg_template_archive_plot">
+        
+        
+        <svg id="svg_template_archive_plot" >
             <ArchiveEventPlot />
         </svg>
 
-        <svg id="svg_template_event_monitor">
-            <EventMonitorPlot />
+        <svg id="svg_template_event_monitor" >
+            <EventMonitorPlot/>
         </svg>
-        <!-- End of templates. -->
+        
+        
 
         <div id="popUpLayer" off-canvas-wrapper>
             <component v-bind:is="popUp" 
@@ -75,12 +75,12 @@
         <PGVPopUpPerma v-if="show_perma"
                        v-on:close-perma="closePerma()"/>
 
-        <svg id="svg_legend" width="300px" height="140">
-            <PGVLegend name="map_legend" v-if="showLegend"/>
+        <svg id="svg_legend" width="300px" height="140" v-show="show_legend">
+            <PGVLegend name="map_legend" />
         </svg>
 
 
-        <div id="map_info">last data: {{ data_time_range[1] }} UTC<br>
+        <div id="map_info"  v-show="show_event_monitor">last data: {{ data_time_range[1] }} UTC<br>
             first data: {{ data_time_range[0] }} UTC<br>
             server state: {{ server_state }}<br><br>
             <b>event monitor</b><br>
@@ -110,7 +110,6 @@ import Vue from 'vue';
 import PGVMapMarker from '../components/PGVMapMarker.vue';
 import PGVLegend from '../components/PGVLegend.vue';
 //import PGVEventVoronoi from '../components/PGVEventVoronoi.vue';
-import Settings from '../components/Settings.vue';
 import PGVPopUpPerma from '../components/PGVPopUpPerma.vue';
 import ArchiveEvent from '../components/ArchiveEvent.vue';
 import ArchiveEventPlot from '../components/ArchiveEventPlot.vue';
@@ -143,8 +142,6 @@ export default {
         // eslint-disable-next-line
         PGVPopUp,
         // eslint-disable-next-line
-        Settings,
-        // eslint-disable-next-line
         PGVPopUpPerma
     },
 
@@ -167,7 +164,6 @@ export default {
             //map_image_url: '/assets/vue/nrt/image/mss_map_with_stations.jpg',
             map_image_url: '/assets/vue/nrt/image/mss_map_clean.jpg',
             logger: undefined,
-            showLegend:false,	//toggles the visibility off the legend
             show_perma:false,	//Toggles the PGVPopUpPerma Area
         };
     },
@@ -176,6 +172,7 @@ export default {
     },
 
     created() {
+        this.show_event_monitor=true;
         this.logger = log.getLogger(this.$options.name)
         this.logger.setLevel(this.$store.getters.log_level);
         log_prefix.apply(this.logger,
@@ -202,7 +199,6 @@ export default {
 
         //window.addEventListener('resize', this.on_resize);
         this.leaflet_map.on("moveend", this.updateMarkers);
-        this.showLegend=this.$store.getters.settings.show_legend;
 
         // Get the svg marker template and add it to the leaflet svg overlay.
         $('#svg_template_pgv_marker').find('#current_pgv_marker').appendTo("#svg_overlay");
@@ -224,7 +220,30 @@ export default {
     },
 
     computed: {
+        show_event_monitor: {
+            get() {
+                return this.$store.getters.map_control.show_event_monitor;
+            },
 
+            set(value) {
+                var payload = {property: 'show_event_monitor',
+                    value: value}
+                this.$store.commit('set_map_control', payload);
+            }
+        },
+        
+        show_legend: {
+            get() {
+                return this.$store.getters.map_control.show_legend;
+            },
+
+            set(value) {
+                var payload = {property: 'show_legend',
+                    value: value}
+                this.$store.commit('set_map_control', payload);
+            }
+        },
+        
         data_time_range: function() {
             return this.$store.getters.data_time_range;
         },

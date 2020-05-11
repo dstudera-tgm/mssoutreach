@@ -224,7 +224,7 @@ export default new Vuex.Store({
         svg_scale: 1,
         settings: {
             show_settings: false,
-            show_legend:true,
+            
             show_map_info:true,
         },
         popUpStored:[],
@@ -252,6 +252,7 @@ export default new Vuex.Store({
             show_detection_result: false,
             show_archive_event: undefined,
             show_archive_event_cells: true,
+            show_legend:true,
         },
         prefix_options: {
             template: '[%t] - %l - %n:',
@@ -269,6 +270,7 @@ export default new Vuex.Store({
     },
 
     getters: {
+        
         log_level: state => {
             return state.log_level;
         },
@@ -647,7 +649,12 @@ export default new Vuex.Store({
 
         show_settings(state,payload) {
             state.settings.show_settings=payload;
+        },
+        
+        show_event_monitor(state,payload) {
+            state.map_control.show_event_monitor=payload;    
         }
+    
     },
 
     actions: {
