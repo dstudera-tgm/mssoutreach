@@ -598,6 +598,7 @@ export default new Vuex.Store({
                     data[k].z = parseFloat(data[k].z);
                     data[k].x_utm = parseFloat(data[k].x_utm);
                     data[k].y_utm = parseFloat(data[k].y_utm);
+                    data[k].classicPopUp=true;
                 }
                 state.station_meta = data;
                 state.stations_imported = true;

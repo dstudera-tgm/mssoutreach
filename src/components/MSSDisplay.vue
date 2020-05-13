@@ -27,10 +27,16 @@
 <template>
     <div id="mss-display-container" class="cell auto">
         <div class="off-canvas-wrapper">
-            <div class="off-canvas-content" data-off-canvas-content>
-                <PGVMap :key="mapKey" v-on:reload-map-2="forceReloadMap()"/>
+            
+            <PGVMap :key="mapKey" v-on:reload-map-2="forceReloadMap()"/>
+            
+            <div class="off-canvas position-right"
+                 id="off_canvas_perma"
+                 data-off-canvas
+                 data-transition="overlap">
+                 <PGVPopUpPerma />
             </div>
-
+            
             <div class="off-canvas-absolute position-left"
                  id="off_canvas_settings"
                  data-off-canvas
@@ -45,7 +51,8 @@
 
 import PGVMap from '../components/PGVMap.vue'
 import Settings from '../components/Settings.vue'
-
+import PGVPopUpPerma from '../components/PGVPopUpPerma.vue';
+    
 export default {
     name: 'MSSDisplay',
     props: {
@@ -60,6 +67,7 @@ export default {
         // eslint-disable-next-line
         PGVMap,
         Settings,
+        PGVPopUpPerma,
     },
 	methods: {
 		forceReloadMap() {
@@ -135,6 +143,9 @@ export default {
 
     //The z-index is needed to raise the offCanvas item above the map.
     #off_canvas_settings
+        z-index: 1000
+    
+    #off_canvas_perma
         z-index: 1000
 
     .off-canvas-wrapper

@@ -7,8 +7,7 @@
                 <button class="close-button" aria-label="Close menu" type="button" data-close>
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <br>
-                <br>
+                <h4>Settings</h4>
                 <ul class="accordion" data-accordion>
                     <li class="accordion-item is-active" data-accordion-item>
                         <!-- Accordion tab title -->
@@ -123,6 +122,9 @@ export default {
 
 <style scoped>
 
+h4 {
+    margin:10px;
+}
 
 #btn_open_settings {
     position:absolute;

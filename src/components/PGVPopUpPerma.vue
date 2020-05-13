@@ -1,13 +1,16 @@
 <template>
-    <div id="permaPopUp" style="position:absolute; background-color:blue;">
+    <div id="permaPopUp">
         <h1>Stations:</h1>
-        <p><button v-on:click="$emit('close-perma')">Close</button></p>
-        <div v-if="popUpStored.length">
+        <button class="close-button" aria-label="Close menu" type="button" data-close>
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <div v-if="popUpStored.length" id="popUpContainer">
             <template v-for="cur_popup in popUpStored">
                 <component v-bind:key="cur_popup.station_id"
                            v-bind:is="cur_popup"
                            id="permaPopUps">
                 </component>
+                
             </template>
 
 
@@ -42,13 +45,17 @@ export default {
     props:{
 
     },
-
+    
     data() {
         return {
 
         }
     },
+    
+    created() {
 
+    },
+    
     mounted() {
         this.logger.debug("Length: " +this.popUpStored.length);
     },
@@ -64,18 +71,13 @@ export default {
 
 </script>
 <style scoped>
-#permaPopUps{
-    position:relative;
-    margin-bottom:5px;
-}
+    #permaPopUp{
+        background-color:aliceblue;
+        height:100%;
+    }
 </style>
 
 <style scoped lang="sass">
-div#permaPopUp
-    height:100%
-    width:350px
-    right:0px
-    top:0px
-    z-index:800
+
 
 </style>

@@ -27,7 +27,7 @@
 
 <template>
     <!--<div id="mapcontainer" @click.ctrl="capture_map">-->
-    <div id="mapcontainer" class="off-canvas-content" data-off-canvas-content>
+    <div id="mapcontainer" >
 
 
         <div id="mapid">
@@ -58,9 +58,8 @@
         
         
 
-        <div id="popUpLayer" off-canvas-wrapper>
+        <div id="off_canvas_popup" class="off-canvas-absolute position-left" data-off-canvas data-transition="overlap">
             <component v-bind:is="popUp" 
-                     v-on:close-popup="closePopUp()"
                      v-on:add-popup="addPopUp()"
                      v-bind:station_id="popUpData.station_id" 
                      v-bind:name="popUpData.name" 
@@ -69,11 +68,11 @@
                      v-bind:coords="popUpData.coords"
                      v-bind:utm_coords="popUpData.utm_coords"
                      v-bind:description="popUpData.description"
-                     data-toggle="offCanvas"></component>
+                     v-bind:classicPopUp="popUpData.classicPopUp"
+                     ref="currentPopUp"></component>
         </div>
 
-        <PGVPopUpPerma v-if="show_perma"
-                       v-on:close-perma="closePerma()"/>
+        
 
         <svg id="svg_legend" width="300px" height="140" v-show="show_legend">
             <PGVLegend name="map_legend" />
@@ -110,7 +109,7 @@ import Vue from 'vue';
 import PGVMapMarker from '../components/PGVMapMarker.vue';
 import PGVLegend from '../components/PGVLegend.vue';
 //import PGVEventVoronoi from '../components/PGVEventVoronoi.vue';
-import PGVPopUpPerma from '../components/PGVPopUpPerma.vue';
+
 import ArchiveEvent from '../components/ArchiveEvent.vue';
 import ArchiveEventPlot from '../components/ArchiveEventPlot.vue';
 import EventMonitorPlot from '../components/EventMonitorPlot.vue';
@@ -141,8 +140,6 @@ export default {
         ArchiveEventPlot,
         // eslint-disable-next-line
         PGVPopUp,
-        // eslint-disable-next-line
-        PGVPopUpPerma
     },
 
     data() {
@@ -158,13 +155,13 @@ export default {
                 coords: "",
                 utm_coords: "",
                 description: "",
+                classicPopUp:false,
             },
             allOptions: 'undefined',
             map_image: 'undefined',
             //map_image_url: '/assets/vue/nrt/image/mss_map_with_stations.jpg',
             map_image_url: '/assets/vue/nrt/image/mss_map_clean.jpg',
             logger: undefined,
-            show_perma:false,	//Toggles the PGVPopUpPerma Area
         };
     },
 
@@ -345,7 +342,7 @@ export default {
             oe3d.addTo(this.leaflet_map);
 
             L.control.layers(allOptions, null, {position: 'topleft', autoZIndex:false }).addTo(this.leaflet_map);
-            L.easyButton('<span style="width: 44px; height: 44px; display: inline-block; font-size: 44px; background-color: white;">&equiv;</span>', function(){$('#off_canvas_settings').foundation('open');}).addTo(this.leaflet_map);
+            L.easyButton('<span style="width: 36px; height: 36px; border-radius: 5px; display: inline-block; font-size: 36px; background-color: white;"><i class="fi-widget size-12" style="color:#696969;"></span>', function(){$('#off_canvas_settings').foundation('open');}).addTo(this.leaflet_map);
 
             this.leaflet_map.setView([47.8972,16.3507], 10);
 
@@ -399,29 +396,23 @@ export default {
             this.popUpData.coords="x: "+curStation.x+" y: "+curStation.y+" z: "+curStation.z;
             this.popUpData.utm_coords="x_utm: "+curStation.x_utm+" y_utm: "+curStation.y_utm;
             this.popUpData.description=curStation.description;
+            this.popUpData.classicPopUp=curStation.classicPopUp;
 
             Vue.component("popUp_1",Vue.extend(PGVPopUp.default));
             this.popUp="popUp_1";
         },
 
-        closePopUp() {
-            this.popUp='';	
-        },
+
 
         //Hängt das offene Popup an die Perma anzeige an
         addPopUp() {
-            this.$store.commit("add_pop_up",Vue.component(this.popUp));
-            this.showPerma();
-            this.closePopUp();
+            this.popUpData.classicPopUp=false;
+            var component=Vue.component(this.popUp);
+            this.$store.commit("add_pop_up",component);
+            this.logger.debug("Length: " +this.$store.getters.popUpStored.length);
+
         },
 
-        showPerma() {
-            this.show_perma=true;
-        },
-
-        closePerma() {
-            this.show_perma=false;
-        },
 
         calculate_path() {
             const scale = this.get_scales();
@@ -498,23 +489,36 @@ export default {
 }
 </script>
 <style>
-#svg_legend {
-    background-color:rgba(181,181,181,0.62);
-    position: absolute; 
-    bottom:20px; 
-    right:5px; 
-    z-index:500;
-    border-radius: 25px;
-}
+    #svg_legend {
+        background-color:rgba(181,181,181,0.62);
+        position: absolute; 
+        bottom:20px; 
+        right:5px; 
+        z-index:500;
+        border-radius: 25px;
+    }
 
-#map_info{
-    background-color:rgba(181,181,181,0.62);
-    position: absolute; 
-    top:5px; 
-    right:5px; 
-    z-index:500;
-    border-radius: 25px;
-}
+    #off_canvas_popup{
+        top:155px;
+        z-index:1000;
+        height:70%;
+        width:20%;
+        margin:10px;
+        overflow-x: hidden;
+        border-radius: 25px;
+        direction:rtl;
+        background-color: #E87B10;
+    }
+
+    #map_info{
+        background-color:rgba(181,181,181,0.62);
+        position: absolute; 
+        top:5px; 
+        right:5px; 
+        z-index:500;
+        border-radius: 25px;
+    }
+
 
 </style>
 
