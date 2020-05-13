@@ -34,7 +34,7 @@
                  id="off_canvas_perma"
                  data-off-canvas
                  data-transition="overlap">
-                 <PGVPopUpPerma />
+                 <PGVPopUpPerma v-if="popUpStored.length"/>
             </div>
             
             <div class="off-canvas-absolute position-left"
@@ -78,6 +78,10 @@ export default {
     computed: {
         stations: function() {
             return this.$store.getters.station_meta;
+        },
+        
+        popUpStored: function() {
+            return this.$store.getters.popUpStored;
         },
         
         show_event_monitor: {

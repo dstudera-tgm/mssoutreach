@@ -361,7 +361,7 @@ export default {
 
         updateMarkers() {
             this.leaflet_map.invalidateSize();
-            var stations=this.$store.getters.station_meta;
+            var stations=this.stations;
 
             for(var i=0;i<stations.length;i++)	{
                 var latlng=new L.LatLng(stations[i].y, stations[i].x);
@@ -380,13 +380,13 @@ export default {
             this.logger.debug("setPopUp: "+station_id);
 
             var curStation="undefined";
-            var stations=this.$store.getters.station_meta;
-            for(var i=0;i<this.$store.getters.station_meta.length;i++) {
+            var stations=this.stations;
+            for(var i=0;i<this.stations.length;i++) {
                 if(stations[i].id==station_id) {
                     curStation=stations[i];
                 }
             }
-            this.logger.debug("Station ID: "+curStation);
+            this.logger.debug("Station ID: "+curStation.id);
 
             this.popUpData.popUpId="pop-"+curStation.id;
             this.popUpData.station_id=curStation.id;
@@ -398,17 +398,27 @@ export default {
             this.popUpData.description=curStation.description;
             this.popUpData.classicPopUp=curStation.classicPopUp;
 
-            Vue.component("popUp_1",Vue.extend(PGVPopUp.default));
-            this.popUp="popUp_1";
+            Vue.component("pop-up",Vue.extend(PGVPopUp.default));
+            this.popUp="pop-up";
         },
 
 
 
         //Hängt das offene Popup an die Perma anzeige an
-        addPopUp() {
-            this.popUpData.classicPopUp=false;
-            var component=Vue.component(this.popUp);
-            this.$store.commit("add_pop_up",component);
+        addPopUp() {            
+            var newPermaPopUp=[];
+            
+            newPermaPopUp.popUpId=this.popUpData.popUpId;
+            newPermaPopUp.station_id=this.popUpData.station_id;
+            newPermaPopUp.name=this.popUpData.name;
+            newPermaPopUp.network=this.popUpData.network;
+            newPermaPopUp.location=this.popUpData.location;
+            newPermaPopUp.coords=this.popUpData.coords;
+            newPermaPopUp.utm_coords=this.popUpData.utm_coords;
+            newPermaPopUp.description=this.popUpData.description;
+            newPermaPopUp.classicPopUp=false;
+            
+            this.$store.commit("add_pop_up",newPermaPopUp);
             this.logger.debug("Length: " +this.$store.getters.popUpStored.length);
 
         },
