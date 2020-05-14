@@ -34,7 +34,7 @@
                  id="off_canvas_perma"
                  data-off-canvas
                  data-transition="overlap">
-                 <PGVPopUpPerma v-if="popUpStored.length"/>
+                 <PGVPopUpPerma />
             </div>
             
             <div class="off-canvas-absolute position-left"
@@ -74,6 +74,7 @@ export default {
 			//this.mapKey+=1;
 			//$('#app').load();
 		},
+        
 	},
     computed: {
         stations: function() {

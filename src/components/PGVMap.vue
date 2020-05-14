@@ -217,6 +217,10 @@ export default {
     },
 
     computed: {
+        popUpStored: function() {
+            return this.$store.getters.popUpStored;
+        },
+        
         show_event_monitor: {
             get() {
                 return this.$store.getters.map_control.show_event_monitor;
@@ -343,6 +347,27 @@ export default {
 
             L.control.layers(allOptions, null, {position: 'topleft', autoZIndex:false }).addTo(this.leaflet_map);
             L.easyButton('<span style="width: 36px; height: 36px; border-radius: 5px; display: inline-block; font-size: 36px; background-color: white;"><i class="fi-widget size-12" style="color:#696969;"></span>', function(){$('#off_canvas_settings').foundation('open');}).addTo(this.leaflet_map);
+            
+            var vm = this;
+            L.easyButton({
+              id: 'open-perma-button',  // an id for the generated button
+              position: 'topright',      // inherited from L.Control -- the corner it goes in
+              type: 'replace',          // set to animate when you're comfy with css
+              leafletClasses: true,     // use leaflet classes to style the button?
+              states:[{                 // specify different icons and responses for your button
+                stateName: 'open-perma',
+                onClick: function(button,vm){
+                    
+                        $('#off_canvas_perma').foundation('open');
+                    
+                  
+                },
+                title: 'Open perma',
+                icon: '<span style="width: 35px; height: 35px; border-radius: 5px; display: inline-block; font-size: 36px; background-color: white;"><i class="fi-indent-less size-8" style="color:#696969;"></span>'
+              }]
+            }).addTo(this.leaflet_map);
+
+            
 
             this.leaflet_map.setView([47.8972,16.3507], 10);
 
@@ -419,8 +444,12 @@ export default {
             newPermaPopUp.classicPopUp=false;
             
             this.$store.commit("add_pop_up",newPermaPopUp);
-            this.logger.debug("Length: " +this.$store.getters.popUpStored.length);
+            this.logger.debug("Length: " +this.popUpStored.length);
 
+        },
+        
+        loadGeoJSON(event) {
+            console.log("Files: "+event.target.files);
         },
 
 

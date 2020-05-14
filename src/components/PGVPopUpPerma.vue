@@ -1,10 +1,10 @@
 <template>
     <div id="permaPopUp">
-        <h1>Stations:</h1>
+        <h1>Stations</h1>
         <button class="close-button" aria-label="Close menu" type="button" data-close>
             <span aria-hidden="true">&times;</span>
         </button>
-        <div v-if="popUps.length>0" id="popUpContainer">
+        <div v-if="popUpStored.length" id="popUpContainer">
             <template v-for="(cur_popup,index) in popUpStored">
                 <component v-bind:is="getPopUp(index)"
                      v-bind:key="stationID(cur_popup.station_id)"
@@ -21,17 +21,6 @@
             </template>
 
 
-            <!--
-                <PGVPopUp 
-                v-for="cur_popup in popUpStored"
-                v-bind:key="cur_popup.station_id"
-                v-bind:station_id="cur_popup.station_id" 
-                v-bind:name="cur_popup.name" 
-                v-bind:network="cur_popup.network"
-                v-bind:location="cur_popup.location"
-                v-bind:coords="cur_popup.coords"
-                v-bind:utm_coords="cur_popup.utm_coords"
-                v-bind:description="cur_popup.description"/>-->
         </div>
 
     </div>
@@ -108,6 +97,9 @@ export default {
 
 </script>
 <style scoped>
+    h1{
+        padding-left:10px;
+    }
     #permaPopUp{
         background-color:aliceblue;
         height:100%;
