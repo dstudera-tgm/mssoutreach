@@ -7,8 +7,7 @@
                 <button class="close-button" aria-label="Close menu" type="button" data-close>
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <br>
-                <br>
+                <h4>Settings</h4>
                 <ul class="accordion" data-accordion>
                     <li class="accordion-item is-active" data-accordion-item>
                         <!-- Accordion tab title -->
@@ -43,7 +42,13 @@
 
                         <!-- Accordion tab content: it would start in the open state due to using the `is-active` state class. -->
                         <div class="accordion-content" data-tab-content>
-                            Content Other
+                            <div>
+                                    <label>Insert GeoJSON</label>
+                            </div>
+                            <div class="file">
+                                    <input id="inputGeo" type="file" @change="loadGeoJSON" name="inputGeo" accept=".json">     
+                            </div>
+                            
                         </div>
                     </li>
                 </ul>
@@ -52,7 +57,9 @@
 </template>
 
 <script>
-import $ from 'jquery';	
+import $ from 'jquery';
+import * as log from 'loglevel';
+import * as log_prefix from 'loglevel-plugin-prefix';
 
 export default {
     name: "Settings",
@@ -62,6 +69,11 @@ export default {
     },
 
     created() {
+        this.show_event_monitor=true;
+        this.logger = log.getLogger(this.$options.name)
+        this.logger.setLevel(this.$store.getters.log_level);
+        log_prefix.apply(this.logger,
+            this.$store.getters.prefix_options);
     },
 
     data() {
@@ -75,18 +87,11 @@ export default {
     },
 
     methods: {
-        activate_settings() {
-            this.$store.commit("show_settings",true);
-            $(".leaflet-control-zoom").css("visibility", "hidden");
-            $(".leaflet-control-layers").css("visibility", "hidden");
-        },
-
-        close_settings() {
-            this.$store.commit("show_settings",false);
-            $(".leaflet-control-zoom").css("visibility", "visible");
-            $(".leaflet-control-layers").css("visibility", "visible");
-        },
-
+        
+        loadGeoJSON(event) {
+            this.$emit("load-geo-json",event.target.files);
+            this.logger.debug("Files: " +event.target.files);
+        }
 
     },
     computed: {
@@ -123,12 +128,19 @@ export default {
 
 <style scoped>
 
+    h4 {
+        margin:10px;
+    }
+    #inputGeo {
+         font-size:11px;
+       
+    }
 
-#btn_open_settings {
-    position:absolute;
-    margin-left:50px;
-    margin-top:25px;
-}
+    #btn_open_settings {
+        position:absolute;
+        margin-left:50px;
+        margin-top:25px;
+    }
 
 
 </style>

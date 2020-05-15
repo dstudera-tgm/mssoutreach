@@ -127,6 +127,7 @@ export default {
 
     props: {
         title: String,
+        geoJson: FileList,
     },
 
     components: {
@@ -351,13 +352,15 @@ export default {
 
             var svg=L.svg();
             svg.addTo(this.leaflet_map);
+            
 
+            
             //this.logger.debug("Overlays: "+d3.select(".leaflet-overlay-pane").count());
             d3.select(".leaflet-overlay-pane")
                 .select("svg")
                 .attr("id","svg_overlay");
 
-
+            
             //this.show_image();
             //this.on_resize();
         },
@@ -495,6 +498,29 @@ export default {
             this.logger.debug("Clicked the map.");
         },
     },
+    watch: {
+        geoJson: function () {
+            let stringData="";
+            let vm=this;
+            let fileReader
+            if(this.geoJson.length) {   
+                
+                for(var i=0;i<this.geoJson.length;i++) {
+                    fileReader=new FileReader();
+                    fileReader.onload = function(progressEvent) {
+                        stringData = fileReader.result;
+                        L.geoJSON(jQuery.parseJSON(stringData)).addTo(vm.leaflet_map);  
+                    }
+
+                    fileReader.readAsText(this.geoJson[i], "UTF-8");
+                    
+                    //json=this.geoJson[i].text();
+                    
+                     
+                }
+            }
+        }
+      },
 }
 </script>
 <style>

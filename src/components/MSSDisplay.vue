@@ -28,14 +28,16 @@
     <div id="mss-display-container" class="cell auto">
         <div class="off-canvas-wrapper">
             <div class="off-canvas-content" data-off-canvas-content>
-                <PGVMap :key="mapKey" v-on:reload-map-2="forceReloadMap()"/>
+                <PGVMap :key="mapKey"
+                        v-bind:geoJson="geoJson"
+                        />
             </div>
 
             <div class="off-canvas-absolute position-left"
                  id="off_canvas_settings"
                  data-off-canvas
                  data-transition="overlap">
-               <Settings/>
+               <Settings  v-on:load-geo-json="loadGeoJSON($event)"/>
             </div>
         </div>
     </div>
@@ -45,6 +47,8 @@
 
 import PGVMap from '../components/PGVMap.vue'
 import Settings from '../components/Settings.vue'
+import * as log from 'loglevel';
+import * as log_prefix from 'loglevel-plugin-prefix';
 
 export default {
     name: 'MSSDisplay',
@@ -54,18 +58,26 @@ export default {
 	data() {
 		return {
 			mapKey:0,
+            geoJson:null,
 		}
 	},
+    created() {
+        this.show_event_monitor=true;
+        this.logger = log.getLogger(this.$options.name)
+        this.logger.setLevel(this.$store.getters.log_level);
+        log_prefix.apply(this.logger,
+            this.$store.getters.prefix_options);
+    },
     components: {
         // eslint-disable-next-line
         PGVMap,
         Settings,
     },
 	methods: {
-		forceReloadMap() {
-			//this.mapKey+=1;
-			//$('#app').load();
-		},
+        loadGeoJSON(files) {
+                this.logger.debug("Files: "+files);
+                this.geoJson=files;
+        },
 	},
     computed: {
         stations: function() {
