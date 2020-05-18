@@ -318,6 +318,8 @@ export default {
 
     methods: {
         init_map() {
+
+            
             var oe3d = L.tileLayer('/assets/vue/nrt/data/map/oe3d/{z}/{x}/{y}.jpg', 
                 {
                     minZoom: 10,
@@ -371,14 +373,19 @@ export default {
             
 
             this.leaflet_map.setView([47.8972,16.3507], 10);
-
-            var svg=L.svg();
+            
+            this.leaflet_map.createPane('markers');
+            this.leaflet_map.getPane('markers').style.zIndex = 700;
+            
+            var svg=L.svg({pane:'markers'});
             svg.addTo(this.leaflet_map);
             
-
+            this.leaflet_map.createPane('geoJson');
+            this.leaflet_map.getPane('geoJson').style.zIndex = 650;
+            
             
             //this.logger.debug("Overlays: "+d3.select(".leaflet-overlay-pane").count());
-            d3.select(".leaflet-overlay-pane")
+            d3.select(".leaflet-markers-pane")
                 .select("svg")
                 .attr("id","svg_overlay");
 
@@ -539,7 +546,7 @@ export default {
                     fileReader=new FileReader();
                     fileReader.onload = function(progressEvent) {
                         stringData = fileReader.result;
-                        L.geoJSON(jQuery.parseJSON(stringData)).addTo(vm.leaflet_map);  
+                        L.geoJSON(jQuery.parseJSON(stringData),{pane:'geoJson'}).addTo(vm.leaflet_map);  
                     }
 
                     fileReader.readAsText(this.geoJson[i], "UTF-8");
@@ -548,7 +555,9 @@ export default {
                     
                      
                 }
+                L.geoJSON.bringToBack();
             }
+            
         }
       },
 }
