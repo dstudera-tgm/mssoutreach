@@ -28,11 +28,15 @@
     <div id="mss-display-container" class="cell auto">
         <div class="off-canvas-wrapper">
             <div class="off-canvas-content" data-off-canvas-content>
-                <PGVMap :key="mapKey"
-                        v-bind:geoJson="geoJson"
-                        />
+                <PGVMap :key="mapKey" v-bind:geoJson="geoJson"/>
             </div>
-
+            <div class="off-canvas position-right"
+                 id="off_canvas_perma"
+                 data-off-canvas
+                 data-transition="overlap">
+                 <PGVPopUpPerma />
+            </div>
+            
             <div class="off-canvas-absolute position-left"
                  id="off_canvas_settings"
                  data-off-canvas
@@ -49,6 +53,7 @@ import PGVMap from '../components/PGVMap.vue'
 import Settings from '../components/Settings.vue'
 import * as log from 'loglevel';
 import * as log_prefix from 'loglevel-plugin-prefix';
+import PGVPopUpPerma from '../components/PGVPopUpPerma.vue';
 
 export default {
     name: 'MSSDisplay',
@@ -72,16 +77,23 @@ export default {
         // eslint-disable-next-line
         PGVMap,
         Settings,
+        PGVPopUpPerma,
     },
 	methods: {
+
         loadGeoJSON(files) {
                 this.logger.debug("Files: "+files);
                 this.geoJson=files;
         },
+
 	},
     computed: {
         stations: function() {
             return this.$store.getters.station_meta;
+        },
+        
+        popUpStored: function() {
+            return this.$store.getters.popUpStored;
         },
         
         show_event_monitor: {
@@ -147,6 +159,9 @@ export default {
 
     //The z-index is needed to raise the offCanvas item above the map.
     #off_canvas_settings
+        z-index: 1000
+    
+    #off_canvas_perma
         z-index: 1000
 
     .off-canvas-wrapper

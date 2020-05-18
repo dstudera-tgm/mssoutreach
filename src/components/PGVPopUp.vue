@@ -2,28 +2,33 @@
 
 
 <template>
-    <div id="popUp" class="ui-widget-content position-left off-canvas"  v-on:popup="setPopUpData" data-off-canvas data-transition="overlap">
+    <div id="popUp"   v-on:popup="setPopUpData">
+        <div id="popUpFree" v-if="classicPopUp">
+                <div style="text-align:right" id="buttonsContainer">
+                <button v-on:click="$emit('add-popup')" data-open="off_canvas_perma" id="addButton" data-close="off_canvas_popup">
+                    <i class="step fi-lock size-18"></i>
+                </button>
 
-        <div style="text-align:right" id="buttonsContainer">
-            <button v-on:click="$emit('add-popup')" id="addButton">
-                <i class="step fi-lock size-18"></i>
-            </button>
+                 <button class="close-button closeButton" aria-label="Close alert" type="button" data-close="off_canvas_popup">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
 
-             <button v-on:click="$emit('close-popup')" class="close-button closeButton" aria-label="Close alert" type="button" data-close>
-                <span aria-hidden="true">&times;</span>
-              </button>
-
+                </div>
+                <h3 id="content">{{name}}</h3>
+                <p><b>latest PGV:</b> {{ (pgv * 1000).toFixed(3) }} mm/s</p> 
+                <p><b>max. PGV:</b> {{ (pgv_max * 1000).toFixed(3) }} mm/s</p> 
+                <h3 class="popUpHeading"  id="content">Stationsmetadaten</h3>
+                <p id="content"><b>ID:</b> {{station_id}}</p>		
+                <p id="content"><b>Netzwerk:</b> {{network}}</p>
+                <p id="content"><b>Standort:</b> {{location}}</p>
+                <p id="content"><b>Koordinaten:</b> {{coords}}</p>
+                <p id="content"><b>UTM Koordinaten:</b> {{utm_coords}}</p>
+                <p id="content"><b>Beschreibung:</b> {{description}}</p>
         </div>
-        <h2 id="content">{{name}}</h2>
-        <p><b>latest PGV:</b> {{ (pgv * 1000).toFixed(3) }} mm/s</p> 
-        <p><b>max. PGV:</b> {{ (pgv_max * 1000).toFixed(3) }} mm/s</p> 
-        <h3 class="popUpHeading"  id="content">Stationsmetadaten</h3>
-        <p id="content"><b>ID:</b> {{station_id}}</p>		
-        <p id="content"><b>Netzwerk</b> {{network}}</p>
-        <p id="content"><b>Standort:</b> {{location}}</p>
-        <p id="content"><b>Koordinaten:</b> {{coords}}</p>
-        <p id="content"><b>UTM Koordinaten:</b> {{utm_coords}}</p>
-        <p id="content"><b>Beschreibung:</b> {{description}}</p>
+        <div id="popUpFixed" v-if="!classicPopUp">
+            <p>{{station_id}}</p>
+        </div>
+
 
     </div>
 </template>
@@ -45,6 +50,7 @@ export default {
         coords: String,
         utm_coords: String,
         description: String,
+        classicPopUp:Boolean,   //Gibt an ob das PopUp am linken Rand als PopUp oder in der PermaPopUp Liste am rechten Rand ist
     },
 
     mounted() {
@@ -66,7 +72,7 @@ export default {
     data() {
         return {
             close_icon_path:"/assets/vue/nrt/image/icons/close_popup.png",
-            attached:false,
+            
         }
     },
 
@@ -94,29 +100,32 @@ export default {
             this.logger.debug("SETPOPUPDATA");
 
         },
+        attached(attach) {
+            this.attached=attach;
+        },
     },
 
 }
 </script>
 
 <style scoped>
-    #popUp{
-        display:inline-block;
-        width:30%;
-        height:450px;
-        left:250px;
-        top: 245px;
+    #popUp{      
+        direction:ltr;       
         font-size:15px;
+        height:100%;
+        height:100%;
         
-        overflow-x:hidden;
-        margin: 0px auto;
-        background-color: #E87B10;
 
+    }
+    #popUpFixed {
+        background-color: #CCCCCC;
+        height:100px;
+        
     }
     
     .popUpHeading {
         background-color:LightGray;
-        width:90%;
+        width:100%;
     }
     
 

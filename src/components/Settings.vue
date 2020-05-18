@@ -98,6 +98,17 @@ export default {
         settings: function() {
             return this.$store.getters.settings;
         },
+        settings: {
+            get() {
+                return this.$store.getters.settings;
+            },
+
+            set(value) {
+                var payload = {property: 'settings',
+                    value: value}
+                this.$store.commit('settings', payload);
+            }
+        },
         show_event_monitor: {
             get() {
                 return this.$store.getters.map_control.show_event_monitor;
@@ -141,6 +152,7 @@ export default {
         margin-left:50px;
         margin-top:25px;
     }
+
 
 
 </style>

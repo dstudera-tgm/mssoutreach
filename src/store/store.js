@@ -598,6 +598,7 @@ export default new Vuex.Store({
                     data[k].z = parseFloat(data[k].z);
                     data[k].x_utm = parseFloat(data[k].x_utm);
                     data[k].y_utm = parseFloat(data[k].y_utm);
+                    data[k].classicPopUp=true;
                 }
                 state.station_meta = data;
                 state.stations_imported = true;
@@ -615,6 +616,10 @@ export default new Vuex.Store({
 
         set_map_control(state, payload) {
             Vue.set(state.map_control, payload.property, payload.value);
+        },
+        
+        settings(state, payload) {
+            Vue.set(state.settings, payload.property, payload.value);
         },
 
         set_show_archive_event(state, payload) {
